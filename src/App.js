@@ -21,6 +21,7 @@ const App = () => {
   const [orders, setOrders] = useState([]);
   const [cart, setCart] = useState({});
   const [products, setProducts] = useState([]);
+  const [promo, setPromo] = useState("");
   const [subtotal, setSubtotal] = useState([]);
   const [lineItems, setLineItems] = useState([]);
 
@@ -119,7 +120,7 @@ const App = () => {
   };
 
   const getSubtotal = () => {
-    //gets subtotal of entire cart-- did not take tax into consideration yet and this total is not going to the backend yet
+    //gets subtotal of entire cart-- did not take tax into consideration yet
     let total = 0;
     lineItems
       .filter(lineItem => lineItem.orderId === cart.id)
@@ -144,6 +145,8 @@ const App = () => {
         <div className="horizontal">
           <Products addToCart={addToCart} products={products} />
           <Cart
+            setPromo={setPromo}
+            promo={promo}
             subtotal={subtotal}
             lineItems={lineItems}
             removeFromCart={removeFromCart}

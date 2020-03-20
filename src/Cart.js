@@ -1,6 +1,9 @@
 import React from "react";
+import axios from "axios";
 
 const Cart = ({
+  setPromo,
+  promo,
   subtotal,
   lineItems,
   cart,
@@ -8,6 +11,17 @@ const Cart = ({
   removeFromCart,
   products
 }) => {
+  const onPromoSubmit = ev => {
+    ev.preventDefault();
+    getPromo(promo);
+  };
+
+  const getPromo = async () => {
+    await axios
+      .get("/api/getPromo", promo)
+      .then(response => console.log("response: ", response));
+  };
+
   return (
     <div>
       <h2>Cart - {cart.id && cart.id.slice(0, 4)}</h2>
@@ -38,6 +52,14 @@ const Cart = ({
           })}
       </ul>
       <p>cart subtotal: ${subtotal}</p>
+      <form onSubmit={onPromoSubmit}>
+        <input
+          placeholder="promo code"
+          value={promo}
+          onChange={ev => setPromo(ev.target.value)}
+        />
+        <button>submit promo code</button>
+      </form>
     </div>
   );
 };

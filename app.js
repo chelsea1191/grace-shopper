@@ -84,6 +84,13 @@ app.get("/api/getLineItems", (req, res, next) => {
     .catch(next);
 });
 
+app.get("/api/getPromo", (req, res, next) => {
+  console.log("server: ", req.body);
+  db.getPromo(req.body)
+    .then(multiplier => res.send(multiplier))
+    .catch(next);
+});
+
 app.post("/api/addToCart", (req, res, next) => {
   db.addToCart({ userId: req.user.id, productId: req.body.productId })
     .then(lineItem => res.send(lineItem))

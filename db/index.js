@@ -18,6 +18,7 @@ const sync = async () => {
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     DROP TABLE IF EXISTS "lineItems";
     DROP TABLE IF EXISTS orders;
+    DROP TABLE IF EXISTS promos;
     DROP TABLE IF EXISTS users;
     DROP TABLE IF EXISTS products;
     CREATE TABLE users(
@@ -47,6 +48,12 @@ const sync = async () => {
       "productId" UUID REFERENCES products(id) NOT NULL,
       quantity INTEGER DEFAULT 1
     );
+    CREATE TABLE promos(
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      code VARCHAR(100) NOT NULL UNIQUE,
+      multiplier DECIMAL NOT NULL
+    );
+    INSERT INTO promos (code, multiplier) VALUES ('TENOFF', '0.9');
   `;
   await client.query(SQL);
   //notes to stay organized:

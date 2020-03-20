@@ -27,6 +27,13 @@ const getOrders = async userId => {
   ).rows;
 };
 
+const getPromo = async code => {
+  console.log("db: ", code);
+  return (
+    await client.query(`SELECT * FROM promos WHERE code=$1 returning *`, [code])
+  ).rows;
+};
+
 const createOrder = async (userId, total) => {
   //simply changes order status from cart to order and updates total
   const cart = await getCart(userId);
@@ -96,6 +103,7 @@ module.exports = {
   getCart,
   getOrders,
   addToCart,
+  getPromo,
   removeFromCart,
   createOrder,
   getLineItems
