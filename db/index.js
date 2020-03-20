@@ -8,6 +8,7 @@ const {
   getCart,
   getOrders,
   addToCart,
+  getPromo,
   removeFromCart,
   createOrder,
   getLineItems
@@ -136,6 +137,7 @@ module.exports = {
   findUserFromToken,
   getCart,
   getOrders,
+  getPromo,
   addToCart,
   removeFromCart,
   createOrder,

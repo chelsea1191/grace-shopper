@@ -21,7 +21,8 @@ const App = () => {
   const [orders, setOrders] = useState([]);
   const [cart, setCart] = useState({});
   const [products, setProducts] = useState([]);
-  const [promo, setPromo] = useState("");
+  const [promo, setPromo] = useState([]);
+  const [multiplier, setMultiplier] = useState(null);
   const [subtotal, setSubtotal] = useState([]);
   const [lineItems, setLineItems] = useState([]);
 
@@ -54,9 +55,24 @@ const App = () => {
     }
   }, [auth]);
 
+  // useEffect(() => {
+  //   if (auth.id) {
+  //     //get from local storage
+  //     const data = localStorage.getItem("multiplier");
+  //     setMultiplier(data);
+  //   }
+  // }, [auth]);
+
+  // useEffect(() => {
+  //   if (auth.id) {
+  //     //store in local storage so it persists
+  //     localStorage.setItem("multiplier", multiplier);
+  //   }
+  // }, []);
+
   useEffect(() => {
     getSubtotal();
-  }, [cart, lineItems]);
+  }, [cart, lineItems, multiplier]);
 
   const login = async credentials => {
     const token = (await axios.post("/api/auth", credentials)).data.token;
@@ -129,7 +145,11 @@ const App = () => {
         let product = products.find(
           product => product.id === lineItem.productId
         );
-        total = total + product.price * lineItem.quantity;
+        if (multiplier == null || undefined) {
+          total = total + product.price * lineItem.quantity;
+        } else {
+          total = multiplier * (total + product.price * lineItem.quantity);
+        }
       });
     setSubtotal(total.toFixed(2));
   };
@@ -146,8 +166,10 @@ const App = () => {
         <div className="horizontal">
           <Products addToCart={addToCart} products={products} />
           <Cart
-            setPromo={setPromo}
             promo={promo}
+            multiplier={multiplier}
+            setPromo={setPromo}
+            setMultiplier={setMultiplier}
             subtotal={subtotal}
             lineItems={lineItems}
             removeFromCart={removeFromCart}
