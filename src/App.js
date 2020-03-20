@@ -21,6 +21,7 @@ const App = () => {
   const [orders, setOrders] = useState([]);
   const [cart, setCart] = useState({});
   const [products, setProducts] = useState([]);
+  const [subtotal, setSubtotal] = useState([]);
   const [lineItems, setLineItems] = useState([]);
 
   useEffect(() => {
@@ -51,6 +52,10 @@ const App = () => {
       });
     }
   }, [auth]);
+
+  useEffect(() => {
+    getSubtotal();
+  }, [lineItems]);
 
   const login = async credentials => {
     const token = (await axios.post("/api/auth", credentials)).data.token;
@@ -113,6 +118,20 @@ const App = () => {
     });
   };
 
+  const getSubtotal = () => {
+    //gets subtotal of entire cart-- did not take tax into consideration yet and this total is not going to the backend yet
+    let total = 0;
+    lineItems
+      .filter(lineItem => lineItem.orderId === cart.id)
+      .map(lineItem => {
+        let product = products.find(
+          product => product.id === lineItem.productId
+        );
+        total = total + product.price * lineItem.quantity;
+      });
+    setSubtotal(total.toFixed(2));
+  };
+
   const { view } = params;
 
   if (!auth.id) {
@@ -125,6 +144,7 @@ const App = () => {
         <div className="horizontal">
           <Products addToCart={addToCart} products={products} />
           <Cart
+            subtotal={subtotal}
             lineItems={lineItems}
             removeFromCart={removeFromCart}
             cart={cart}

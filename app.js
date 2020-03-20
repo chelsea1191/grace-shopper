@@ -73,6 +73,7 @@ app.get("/api/getOrders", (req, res, next) => {
 });
 
 app.post("/api/createOrder", (req, res, next) => {
+  console.log("server: ", req.body);
   db.createOrder(req.user.id)
     .then(order => res.send(order))
     .catch(next);

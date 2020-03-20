@@ -1,20 +1,13 @@
 import React from "react";
 
-const Cart = ({ lineItems, cart, createOrder, removeFromCart, products }) => {
-  const getSubtotal = () => {
-    //gets subtotal of entire cart--- did not take tax into consideration yet
-    let total = 0;
-    lineItems
-      .filter(lineItem => lineItem.orderId === cart.id)
-      .map(lineItem => {
-        let product = products.find(
-          product => product.id === lineItem.productId
-        );
-        total = total + product.price * lineItem.quantity;
-      });
-    return total.toFixed(2);
-  };
-
+const Cart = ({
+  subtotal,
+  lineItems,
+  cart,
+  createOrder,
+  removeFromCart,
+  products
+}) => {
   return (
     <div>
       <h2>Cart - {cart.id && cart.id.slice(0, 4)}</h2>
@@ -44,7 +37,7 @@ const Cart = ({ lineItems, cart, createOrder, removeFromCart, products }) => {
             );
           })}
       </ul>
-      <p>cart subtotal: ${getSubtotal()}</p>
+      <p>cart subtotal: ${subtotal}</p>
     </div>
   );
 };
