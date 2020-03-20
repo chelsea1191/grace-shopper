@@ -55,7 +55,7 @@ const App = () => {
 
   useEffect(() => {
     getSubtotal();
-  }, [lineItems]);
+  }, [cart, lineItems]);
 
   const login = async credentials => {
     const token = (await axios.post("/api/auth", credentials)).data.token;
@@ -86,7 +86,7 @@ const App = () => {
   const createOrder = () => {
     const token = window.localStorage.getItem("token");
     axios
-      .post("/api/createOrder", null, headers())
+      .post("/api/createOrder", { subtotal }, headers())
       .then(response => {
         setOrders([response.data, ...orders]);
         const token = window.localStorage.getItem("token");

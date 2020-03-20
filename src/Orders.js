@@ -3,7 +3,7 @@ import React from "react";
 const Orders = ({ lineItems, orders, products }) => {
   return (
     <div>
-      <h2>Orders</h2>
+      <h2>Orders ({orders.length})</h2>
       <ul>
         {orders.map(order => {
           const _lineItems = lineItems.filter(
@@ -27,7 +27,7 @@ const Orders = ({ lineItems, orders, products }) => {
                   );
                 })}
               </ul>
-              <p></p>
+              <p>order total: ${order.total}</p>
             </li>
           );
         })}

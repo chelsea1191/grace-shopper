@@ -27,10 +27,14 @@ const getOrders = async userId => {
   ).rows;
 };
 
-const createOrder = async userId => {
-  //simply changes order status from cart to order
+const createOrder = async (userId, total) => {
+  //simply changes order status from cart to order and updates total
   const cart = await getCart(userId);
   cart.status = "ORDER";
+  await client.query(`UPDATE orders SET total=$1 WHERE id=$2 returning *`, [
+    total.subtotal,
+    cart.id
+  ]);
   return (
     await client.query(`UPDATE orders SET status=$1 WHERE id=$2 returning *`, [
       "ORDER",
