@@ -40,6 +40,7 @@ const sync = async () => {
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     DROP TABLE IF EXISTS "lineItems";
     DROP TABLE IF EXISTS orders;
+    DROP TABLE IF EXISTS promos;
     DROP TABLE IF EXISTS users;
     DROP TABLE IF EXISTS products;
     CREATE TABLE users(
@@ -64,6 +65,7 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       "userId" UUID REFERENCES users(id) NOT NULL,
       status VARCHAR(10) DEFAULT 'CART',
+      total DECIMAL DEFAULT 0,
       "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
 		
@@ -73,7 +75,14 @@ const sync = async () => {
       "productId" UUID REFERENCES products(id) NOT NULL,
       quantity INTEGER DEFAULT 1
     );
+    CREATE TABLE promos(
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      code VARCHAR(100) NOT NULL UNIQUE,
+      multiplier DECIMAL NOT NULL
+    );
+    INSERT INTO promos (code, multiplier) VALUES ('TENOFF', '0.9');
   `;
+
 	await client.query(SQL);
 
 	const _users = {
@@ -112,6 +121,7 @@ const sync = async () => {
 		}
 	};
 
+
 	const userMap = (await users.read()).reduce((acc, user) => {
 		acc[user.username] = user;
 		return acc;
@@ -124,6 +134,7 @@ const sync = async () => {
 		users: userMap,
 		products: productMap
 	};
+
 };
 
 module.exports = {
