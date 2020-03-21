@@ -10,6 +10,7 @@ app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use(express.json());
 
 const isLoggedIn = (req, res, next) => {
+
   if (!req.user) {
     const error = Error("not authorized");
     error.status = 401;

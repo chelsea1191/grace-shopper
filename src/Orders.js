@@ -1,6 +1,7 @@
 import React from "react";
 
 const Orders = ({ lineItems, orders, products }) => {
+
   return (
     <div>
       <h2>Orders ({orders.length})</h2>
@@ -34,6 +35,7 @@ const Orders = ({ lineItems, orders, products }) => {
       </ul>
     </div>
   );
+
 };
 
 export default Orders;
