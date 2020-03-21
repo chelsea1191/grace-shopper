@@ -1,10 +1,12 @@
-import React from "react";
-
+import React, { useState } from "react";
 import axios from "axios";
+import PromoDisplay from "./PromoDisplay.js";
 
 const Cart = ({
-  setPromo,
   promo,
+  setPromo,
+  multiplier,
+  setMultiplier,
   subtotal,
   lineItems,
   cart,
@@ -12,15 +14,19 @@ const Cart = ({
   removeFromCart,
   products
 }) => {
-  const onPromoSubmit = ev => {
-    ev.preventDefault();
-    getPromo(promo);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const onChange = ev => {
+    let uppercaseInput = ev.target.value.toUpperCase();
+    setPromo(uppercaseInput);
   };
 
-  const getPromo = async () => {
-    await axios
-      .get("/api/getPromo", promo)
-      .then(response => console.log("response: ", response));
+  const onPromoSubmit = ev => {
+    ev.preventDefault();
+    setIsSubmitted(true);
+    axios
+      .post("/api/getPromo", { promo })
+      .then(response => setMultiplier(response.data.multiplier));
   };
 
   return (
@@ -54,16 +60,12 @@ const Cart = ({
       </ul>
       <p>cart subtotal: ${subtotal}</p>
       <form onSubmit={onPromoSubmit}>
-        <input
-          placeholder="promo code"
-          value={promo}
-          onChange={ev => setPromo(ev.target.value)}
-        />
+        <input placeholder="promo code" value={promo} onChange={onChange} />
         <button>submit promo code</button>
+        {isSubmitted && <PromoDisplay multiplier={multiplier} />}
       </form>
     </div>
   );
-
 };
 
 export default Cart;

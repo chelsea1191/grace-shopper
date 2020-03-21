@@ -85,9 +85,9 @@ app.get("/api/getLineItems", (req, res, next) => {
     .catch(next);
 });
 
-app.get("/api/getPromo", (req, res, next) => {
-  console.log("server: ", req.body);
-  db.getPromo(req.body)
+app.post("/api/getPromo", async (req, res, next) => {
+  await db
+    .getPromo(req.body)
     .then(multiplier => res.send(multiplier))
     .catch(next);
 });

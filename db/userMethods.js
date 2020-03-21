@@ -28,11 +28,10 @@ const getOrders = async userId => {
   ).rows;
 };
 
-const getPromo = async code => {
-  console.log("db: ", code);
+const getPromo = async promo => {
   return (
-    await client.query(`SELECT * FROM promos WHERE code=$1 returning *`, [code])
-  ).rows;
+    await client.query(`SELECT * FROM promos WHERE code=$1`, [promo.promo])
+  ).rows[0];
 };
 
 const createOrder = async (userId, total) => {
