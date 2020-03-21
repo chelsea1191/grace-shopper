@@ -1,13 +1,14 @@
-const client = require('../client');
+const client = require("../client");
 
 const products = {
-  read: async()=> {
-    return (await client.query('SELECT * from products')).rows;
-  },
-  create: async({ name, price })=> {
-    const SQL = `INSERT INTO products(name, price) values($1, $2) returning *`;
-    return (await client.query(SQL, [name, price ])).rows[0];
-  },
+	read: async () => {
+		return (await client.query("SELECT * from products")).rows;
+	},
+	create: async ({ name, price, description, rating, image }) => {
+		const SQL = `INSERT INTO products(name, price, description, rating, image) values($1, $2, $3, $4, $5) returning *`;
+		return (await client.query(SQL, [name, price, description, rating, image]))
+			.rows[0];
+	}
 };
 
 module.exports = products;

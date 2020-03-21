@@ -51,3 +51,18 @@ li > * {
   color: teal;
   font-weight: bold;
 }
+
+.productImg > img {
+  border-radius: 50%;
+}
+
+.productBox {
+  display: flex;
+  flex-direction: row;
+}
+
+.productText {
+  display: flex;
+  flex-direction: column;
+  align-content: space-evenly;
+}

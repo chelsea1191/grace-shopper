@@ -23,6 +23,9 @@ const App = () => {
   const [orders, setOrders] = useState([]);
   const [cart, setCart] = useState({});
   const [products, setProducts] = useState([]);
+  const [promo, setPromo] = useState([]);
+  const [multiplier, setMultiplier] = useState(null);
+  const [subtotal, setSubtotal] = useState([]);
   const [lineItems, setLineItems] = useState([]);
 
   useEffect(() => {
@@ -54,6 +57,25 @@ const App = () => {
     }
   }, [auth]);
 
+  // useEffect(() => {
+  //   if (auth.id) {
+  //     //get from local storage
+  //     const data = localStorage.getItem("multiplier");
+  //     setMultiplier(data);
+  //   }
+  // }, [auth]);
+
+  // useEffect(() => {
+  //   if (auth.id) {
+  //     //store in local storage so it persists
+  //     localStorage.setItem("multiplier", multiplier);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    getSubtotal();
+  }, [cart, lineItems, multiplier]);
+
   const login = async credentials => {
     const token = (await axios.post('/api/auth', credentials)).data.token;
     window.localStorage.setItem('token', token);
@@ -67,6 +89,7 @@ const App = () => {
 
   const logout = () => {
     window.location.hash = '#';
+    window.localStorage.removeItem('token');
     setAuth({});
   };
 
@@ -83,7 +106,7 @@ const App = () => {
   const createOrder = () => {
     const token = window.localStorage.getItem('token');
     axios
-      .post('/api/createOrder', null, headers())
+      .post('/api/createOrder', { subtotal }, headers())
       .then(response => {
         setOrders([response.data, ...orders]);
         const token = window.localStorage.getItem('token');
@@ -122,6 +145,23 @@ const App = () => {
       0
     );
   };
+  const getSubtotal = () => {
+    //gets subtotal of entire cart-- did not take tax into consideration yet
+    let total = 0;
+    lineItems
+      .filter(lineItem => lineItem.orderId === cart.id)
+      .map(lineItem => {
+        let product = products.find(
+          product => product.id === lineItem.productId
+        );
+        if (multiplier == null || undefined) {
+          total = total + product.price * lineItem.quantity;
+        } else {
+          total = multiplier * (total + product.price * lineItem.quantity);
+        }
+      });
+    setSubtotal(total.toFixed(2));
+  };
 
   const { view } = params;
 
@@ -139,6 +179,11 @@ const App = () => {
         <div className="horizontal">
           <Products addToCart={addToCart} products={products} />
           <Cart
+            promo={promo}
+            multiplier={multiplier}
+            setPromo={setPromo}
+            setMultiplier={setMultiplier}
+            subtotal={subtotal}
             lineItems={lineItems}
             removeFromCart={removeFromCart}
             cart={cart}
