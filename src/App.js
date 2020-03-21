@@ -7,6 +7,7 @@ import Cart from './Cart';
 import Products from './Products';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 const headers = () => {
   const token = window.localStorage.getItem('token');
@@ -169,30 +170,57 @@ const App = () => {
     return <Login login={login} />;
   } else {
     return (
-      <div>
-        <h1>Foo, Bar, Bazz.. etc Store</h1>
-        <button onClick={logout}>Logout {auth.username} </button>
-        <span className="fa-layers fa-fw fa-3x">
-          <FontAwesomeIcon icon={faShoppingCart} />
-          <span className="fa-layers-counter">{totalItemsInCart()}</span>
-        </span>
-        <div className="horizontal">
-          <Products addToCart={addToCart} products={products} />
-          <Cart
-            promo={promo}
-            multiplier={multiplier}
-            setPromo={setPromo}
-            setMultiplier={setMultiplier}
-            subtotal={subtotal}
-            lineItems={lineItems}
-            removeFromCart={removeFromCart}
-            cart={cart}
-            createOrder={createOrder}
-            products={products}
-          />
-          <Orders lineItems={lineItems} products={products} orders={orders} />
+      <Router>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Products</Link>
+              </li>
+              <li>
+                <Link to="/cart">Cart</Link>
+              </li>
+              <li>
+                <Link to="/orders">Orders</Link>
+              </li>
+            </ul>
+          </nav>
+
+          <h1>Grace Shopper</h1>
+          <button onClick={logout}>Logout {auth.username} </button>
+          <span className="fa-layers fa-fw fa-3x">
+            <FontAwesomeIcon icon={faShoppingCart} />
+            <span className="fa-layers-counter">{totalItemsInCart()}</span>
+          </span>
+
+          <Switch>
+            <Route path="/orders">
+              <Orders
+                lineItems={lineItems}
+                products={products}
+                orders={orders}
+              />
+            </Route>
+            <Route path="/cart">
+              <Cart
+                promo={promo}
+                multiplier={multiplier}
+                setPromo={setPromo}
+                setMultiplier={setMultiplier}
+                subtotal={subtotal}
+                lineItems={lineItems}
+                removeFromCart={removeFromCart}
+                cart={cart}
+                createOrder={createOrder}
+                products={products}
+              />{' '}
+            </Route>
+            <Route path="/">
+              <Products addToCart={addToCart} products={products} />
+            </Route>
+          </Switch>
         </div>
-      </div>
+      </Router>
     );
   }
 };
