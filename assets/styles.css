@@ -1,5 +1,14 @@
 body {
+  margin: 10px;
   font-family: sans-serif;
+  background-color: mintcream;
+}
+nav {
+  border-radius: 10px;
+  background-color: powderblue;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1rem;
 }
 
 input,
@@ -27,6 +36,11 @@ form > * {
   margin: 1rem;
   border: solid 1px dodgerBlue;
   padding: 1rem;
+}
+
+.link {
+  font-weight: bold;
+  font-size: x-large;
 }
 
 ul {
