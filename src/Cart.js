@@ -1,4 +1,5 @@
 import React from "react";
+
 import axios from "axios";
 
 const Cart = ({
@@ -62,6 +63,7 @@ const Cart = ({
       </form>
     </div>
   );
+
 };
 
 export default Cart;
