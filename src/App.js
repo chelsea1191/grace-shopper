@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import qs from 'qs';
-import axios from 'axios';
-import Login from './Login';
-import Orders from './Orders';
-import Cart from './Cart';
-import Products from './Products';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import qs from "qs";
+import axios from "axios";
+import Login from "./Login";
+import Register from "./Register";
+import Orders from "./Orders";
+import Cart from "./Cart";
+import Products from "./Products";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 const headers = () => {
-  const token = window.localStorage.getItem('token');
+  const token = window.localStorage.getItem("token");
   return {
     headers: {
-      authorization: token,
-    },
+      authorization: token
+    }
   };
 };
 
@@ -30,13 +31,13 @@ const App = () => {
   const [lineItems, setLineItems] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/products').then(response => setProducts(response.data));
+    axios.get("/api/products").then(response => setProducts(response.data));
   }, []);
 
   useEffect(() => {
     if (auth.id) {
-      const token = window.localStorage.getItem('token');
-      axios.get('/api/getLineItems', headers()).then(response => {
+      const token = window.localStorage.getItem("token");
+      axios.get("/api/getLineItems", headers()).then(response => {
         setLineItems(response.data);
       });
     }
@@ -44,7 +45,7 @@ const App = () => {
 
   useEffect(() => {
     if (auth.id) {
-      axios.get('/api/getCart', headers()).then(response => {
+      axios.get("/api/getCart", headers()).then(response => {
         setCart(response.data);
       });
     }
@@ -52,7 +53,7 @@ const App = () => {
 
   useEffect(() => {
     if (auth.id) {
-      axios.get('/api/getOrders', headers()).then(response => {
+      axios.get("/api/getOrders", headers()).then(response => {
         setOrders(response.data);
       });
     }
@@ -78,19 +79,19 @@ const App = () => {
   }, [cart, lineItems, multiplier]);
 
   const login = async credentials => {
-    const token = (await axios.post('/api/auth', credentials)).data.token;
-    window.localStorage.setItem('token', token);
+    const token = (await axios.post("/api/auth", credentials)).data.token;
+    window.localStorage.setItem("token", token);
     exchangeTokenForAuth();
   };
 
   const exchangeTokenForAuth = async () => {
-    const response = await axios.get('/api/auth', headers());
+    const response = await axios.get("/api/auth", headers());
     setAuth(response.data);
   };
 
   const logout = () => {
-    window.location.hash = '#';
-    window.localStorage.removeItem('token');
+    window.location.hash = "#";
+    window.localStorage.removeItem("token");
     setAuth({});
   };
 
@@ -99,19 +100,19 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener('hashchange', () => {
+    window.addEventListener("hashchange", () => {
       setParams(qs.parse(window.location.hash.slice(1)));
     });
   }, []);
 
   const createOrder = () => {
-    const token = window.localStorage.getItem('token');
+    const token = window.localStorage.getItem("token");
     axios
-      .post('/api/createOrder', { subtotal }, headers())
+      .post("/api/createOrder", { subtotal }, headers())
       .then(response => {
         setOrders([response.data, ...orders]);
-        const token = window.localStorage.getItem('token');
-        return axios.get('/api/getCart', headers());
+        const token = window.localStorage.getItem("token");
+        return axios.get("/api/getCart", headers());
       })
       .then(response => {
         setCart(response.data);
@@ -119,7 +120,7 @@ const App = () => {
   };
 
   const addToCart = productId => {
-    axios.post('/api/addToCart', { productId }, headers()).then(response => {
+    axios.post("/api/addToCart", { productId }, headers()).then(response => {
       const lineItem = response.data;
       const found = lineItems.find(_lineItem => _lineItem.id === lineItem.id);
       if (!found) {
@@ -167,31 +168,63 @@ const App = () => {
   const { view } = params;
 
   if (!auth.id) {
-    return <Login login={login} />;
+    return (
+      <Router>
+        <div>
+          <h1>Grace Shopper</h1>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/login">
+                Login
+              </Link>
+            </li>
+            <li className="nav-link active">
+              <Link className="link" to="/register">
+                Register
+              </Link>
+            </li>
+          </nav>
+          <Switch>
+            <Route path="/login">
+              <Login login={login} />
+            </Route>
+            <Route path="/register">
+              <Register />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    );
   } else {
     return (
       <Router>
         <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Products</Link>
-              </li>
-              <li>
-                <Link to="/cart">Cart</Link>
-              </li>
-              <li>
-                <Link to="/orders">Orders</Link>
-              </li>
-            </ul>
-          </nav>
-
           <h1>Grace Shopper</h1>
-          <button onClick={logout}>Logout {auth.username} </button>
-          <span className="fa-layers fa-fw fa-3x">
-            <FontAwesomeIcon icon={faShoppingCart} />
-            <span className="fa-layers-counter">{totalItemsInCart()}</span>
-          </span>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/">
+                Products
+              </Link>
+            </li>
+            <li>
+              <Link to="/cart">
+                <span className="fa-layers fa-fw fa-3x">
+                  <FontAwesomeIcon icon={faShoppingCart} />
+                  <span className="fa-layers-counter">
+                    {totalItemsInCart()}
+                  </span>
+                </span>
+              </Link>
+            </li>
+            <li className="nav-link">
+              <Link className="link" to="/orders">
+                Orders
+              </Link>
+            </li>
+            <li className="nav-link">
+              <button onClick={logout}>Logout {auth.username} </button>
+            </li>
+          </nav>
 
           <Switch>
             <Route path="/orders">
@@ -213,7 +246,7 @@ const App = () => {
                 cart={cart}
                 createOrder={createOrder}
                 products={products}
-              />{' '}
+              />{" "}
             </Route>
             <Route path="/">
               <Products addToCart={addToCart} products={products} />
