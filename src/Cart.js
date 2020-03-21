@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import axios from "axios";
-import PromoDisplay from "./PromoDisplay.js";
+import React, { useState } from 'react';
+import axios from 'axios';
+import PromoDisplay from './PromoDisplay.js';
 
 const Cart = ({
   promo,
@@ -12,7 +12,7 @@ const Cart = ({
   cart,
   createOrder,
   removeFromCart,
-  products
+  products,
 }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -25,7 +25,7 @@ const Cart = ({
     ev.preventDefault();
     setIsSubmitted(true);
     axios
-      .post("/api/getPromo", { promo })
+      .post('/api/getPromo', { promo })
       .then(response => setMultiplier(response.data.multiplier));
   };
 
@@ -33,6 +33,8 @@ const Cart = ({
     <div>
       <h2>Cart - {cart.id && cart.id.slice(0, 4)}</h2>
       <button
+        type="button"
+        className="btn btn-dark"
         disabled={!lineItems.find(lineItem => lineItem.orderId === cart.id)}
         onClick={createOrder}
       >

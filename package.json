@@ -25,6 +25,9 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/react-fontawesome": "^0.1.9",
     "bcrypt": "^4.0.1",
     "express": "^4.17.1",
     "faker": "^4.1.0",
