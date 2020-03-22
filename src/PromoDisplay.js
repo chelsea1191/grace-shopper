@@ -1,10 +1,10 @@
 import React from "react";
 
-const PromoDisplay = ({ multiplier }) => {
-  if (multiplier == 0.9) {
-    return <p>promo code applied! 10% off any purchase</p>;
+const PromoDisplay = ({ multiplier, promoDescription }) => {
+  if (multiplier) {
+    return <p>code applied! {promoDescription}</p>;
   } else {
-    return <p>promo code applied</p>;
+    return <p>invalid code</p>;
   }
 };
 

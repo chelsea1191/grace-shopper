@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import PromoDisplay from './PromoDisplay.js';
+import React, { useState } from "react";
+import axios from "axios";
+import PromoDisplay from "./PromoDisplay.js";
 
 const Cart = ({
   promo,
   setPromo,
+  promoDescription,
+  setPromoDescription,
   multiplier,
   setMultiplier,
   subtotal,
@@ -12,7 +14,7 @@ const Cart = ({
   cart,
   createOrder,
   removeFromCart,
-  products,
+  products
 }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -24,9 +26,10 @@ const Cart = ({
   const onPromoSubmit = ev => {
     ev.preventDefault();
     setIsSubmitted(true);
-    axios
-      .post('/api/getPromo', { promo })
-      .then(response => setMultiplier(response.data.multiplier));
+    axios.post("/api/getPromo", { promo }).then(response => {
+      setPromoDescription(response.data.description);
+      setMultiplier(response.data.multiplier);
+    });
   };
 
   return (
@@ -64,7 +67,12 @@ const Cart = ({
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
         <button>submit promo code</button>
-        {isSubmitted && <PromoDisplay multiplier={multiplier} />}
+        {isSubmitted && (
+          <PromoDisplay
+            promoDescription={promoDescription}
+            multiplier={multiplier}
+          />
+        )}
       </form>
     </div>
   );
