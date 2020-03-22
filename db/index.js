@@ -60,7 +60,14 @@ const sync = async () => {
 			rating INT,
 			image VARCHAR(255),
       CHECK (char_length(name) > 0)
-		);
+    );
+
+    CREATE TABLE promos(
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      code VARCHAR(100) NOT NULL UNIQUE,
+      description VARCHAR(300) NOT NULL,
+      multiplier DECIMAL NOT NULL
+    );
 
     CREATE TABLE orders(
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -76,12 +83,10 @@ const sync = async () => {
       "productId" UUID REFERENCES products(id) NOT NULL,
       quantity INTEGER DEFAULT 1
     );
-    CREATE TABLE promos(
-      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      code VARCHAR(100) NOT NULL UNIQUE,
-      multiplier DECIMAL NOT NULL
-    );
-    INSERT INTO promos (code, multiplier) VALUES ('TENOFF', '0.9');
+
+    INSERT INTO promos (code, description, multiplier) VALUES ('TENOFF', 'take 10% off any purchase', '0.9');
+    INSERT INTO promos (code, description, multiplier) VALUES ('SPRING20', 'take 20% off any purchase', '0.8');
+    INSERT INTO promos (code, description, multiplier) VALUES ('UNF40', 'take 40% off any purchase', '0.6');
   `;
 
   await client.query(SQL);

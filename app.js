@@ -10,7 +10,6 @@ app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use(express.json());
 
 const isLoggedIn = (req, res, next) => {
-
   if (!req.user) {
     const error = Error("not authorized");
     error.status = 401;
@@ -42,10 +41,6 @@ app.use((req, res, next) => {
       next(error);
     });
 });
-
-app.get("/", (req, res, next) =>
-  res.sendFile(path.join(__dirname, "index.html"))
-);
 
 app.post("/api/auth", (req, res, next) => {
   db.authenticate(req.body)
@@ -85,10 +80,11 @@ app.get("/api/getLineItems", (req, res, next) => {
     .catch(next);
 });
 
-app.post("/api/getPromo", async (req, res, next) => {
-  await db
-    .getPromo(req.body)
-    .then(multiplier => res.send(multiplier))
+app.post("/api/getPromo", (req, res, next) => {
+  db.getPromo(req.body)
+    .then(promo => {
+      res.send(promo);
+    })
     .catch(next);
 });
 
@@ -125,6 +121,10 @@ Object.keys(models).forEach(key => {
       .catch(next);
   });
 });
+
+app.get("/*", (req, res, next) =>
+  res.sendFile(path.join(__dirname, "index.html"))
+);
 
 app.use((req, res, next) => {
   const error = {
