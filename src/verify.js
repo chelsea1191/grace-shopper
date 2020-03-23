@@ -3,6 +3,7 @@ const axios = require("axios");
 
 const verify = async e => {
 	e.preventDefault();
+	let words;
 	let address = e.target[0].value;
 	let city = e.target[1].value;
 	let state = e.target[2].value;
@@ -15,11 +16,12 @@ const verify = async e => {
 		.then(response => {
 			if (response.data.Error) {
 				console.log("Error");
-				return response.data.Error;
+				words = response.data.Error;
+				return words;
 			} else {
 				console.log("Valid");
-				console.log(response);
-				return response.data.Addresses[0];
+				words = response.data.Addresses[0];
+				return words;
 			}
 		});
 };

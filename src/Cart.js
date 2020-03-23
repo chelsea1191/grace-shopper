@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import PromoDisplay from "./PromoDisplay.js";
+import verify from "./verify";
 
 const Cart = ({
 	promo,
@@ -33,7 +34,7 @@ const Cart = ({
 	};
 
 	const handleAddress = async e => {
-		let address = await verify(e);
+		let address = await verify(e).catch(err => console.log(err));
 		console.log(address);
 		// await axios
 		// 	.post("/api/address", { address, user })
@@ -81,6 +82,13 @@ const Cart = ({
 						multiplier={multiplier}
 					/>
 				)}
+			</form>
+			<form onSubmit={handleAddress}>
+				<input placeholder="Address" />
+				<input placeholder="City" />
+				<input placeholder="State" />
+				<input placeholder="Zip" />
+				<button>Use This Address</button>
 			</form>
 		</div>
 	);
