@@ -50,8 +50,19 @@ const Cart = ({
             return (
               <li key={lineItem.id}>
                 {product && product.name} <br />
-                <span className="quantity">Quantity: {lineItem.quantity}</span>
-                <button onClick={() => removeFromCart(lineItem.id)}>
+                {product.description}
+                <div className="quantity">
+                  <label htmlFor="name">Quantity: </label>
+                  <input
+                    type="text"
+                    name="quantity"
+                    value={lineItem.quantity}
+                  />
+                </div>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => removeFromCart(lineItem.id)}
+                >
                   Remove From Cart
                 </button>
                 item subtotal: $
