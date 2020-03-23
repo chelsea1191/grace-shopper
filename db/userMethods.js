@@ -1,7 +1,6 @@
 const client = require("./client");
 
 const getCart = async userId => {
-
   //find current order with CART status else make a new one upon login
   const response = await client.query(
     `SELECT * FROM orders WHERE status='CART' and "userId"=$1`,
@@ -107,5 +106,4 @@ module.exports = {
   removeFromCart,
   createOrder,
   getLineItems
-
 };

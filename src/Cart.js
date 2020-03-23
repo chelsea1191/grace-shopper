@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import PromoDisplay from './PromoDisplay.js';
+import verify from './verify';
 
 const Cart = ({
   promo,
   setPromo,
+  promoDescription,
+  setPromoDescription,
   multiplier,
   setMultiplier,
   subtotal,
@@ -24,9 +27,18 @@ const Cart = ({
   const onPromoSubmit = ev => {
     ev.preventDefault();
     setIsSubmitted(true);
-    axios
-      .post('/api/getPromo', { promo })
-      .then(response => setMultiplier(response.data.multiplier));
+    axios.post('/api/getPromo', { promo }).then(response => {
+      setPromoDescription(response.data.description);
+      setMultiplier(response.data.multiplier);
+    });
+  };
+
+  const handleAddress = async e => {
+    let address = await verify(e).catch(err => console.log(err));
+    console.log(address);
+    // await axios
+    // 	.post("/api/address", { address, user })
+    // 	.then(response => console.log(response));
   };
 
   return (
@@ -75,7 +87,19 @@ const Cart = ({
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
         <button>submit promo code</button>
-        {isSubmitted && <PromoDisplay multiplier={multiplier} />}
+        {isSubmitted && (
+          <PromoDisplay
+            promoDescription={promoDescription}
+            multiplier={multiplier}
+          />
+        )}
+      </form>
+      <form onSubmit={handleAddress}>
+        <input placeholder="Address" />
+        <input placeholder="City" />
+        <input placeholder="State" />
+        <input placeholder="Zip" />
+        <button>Use This Address</button>
       </form>
     </div>
   );

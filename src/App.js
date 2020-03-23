@@ -26,6 +26,7 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [products, setProducts] = useState([]);
   const [promo, setPromo] = useState([]);
+  const [promoDescription, setPromoDescription] = useState(null);
   const [multiplier, setMultiplier] = useState(null);
   const [subtotal, setSubtotal] = useState([]);
   const [lineItems, setLineItems] = useState([]);
@@ -60,18 +61,14 @@ const App = () => {
   }, [auth]);
 
   // useEffect(() => {
-  //   if (auth.id) {
-  //     //get from local storage
-  //     const data = localStorage.getItem("multiplier");
-  //     setMultiplier(data);
-  //   }
+  //   //get from local storage
+  //   const data = localStorage.getItem("multiplier");
+  //   setMultiplier(data);
   // }, [auth]);
 
   // useEffect(() => {
-  //   if (auth.id) {
-  //     //store in local storage so it persists
-  //     localStorage.setItem("multiplier", multiplier);
-  //   }
+  //   //store in local storage so it persists
+  //   localStorage.setItem("multiplier", multiplier);
   // }, []);
 
   useEffect(() => {
@@ -236,6 +233,8 @@ const App = () => {
             <Route path="/cart">
               <Cart
                 promo={promo}
+                promoDescription={promoDescription}
+                setPromoDescription={setPromoDescription}
                 multiplier={multiplier}
                 setPromo={setPromo}
                 setMultiplier={setMultiplier}
