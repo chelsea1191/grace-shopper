@@ -68,6 +68,12 @@ app.get("/api/getOrders", (req, res, next) => {
     .catch(next);
 });
 
+app.get("/api/getPromos", (req, res, next) => {
+  db.getAllPromos()
+    .then(promos => res.send(promos))
+    .catch(next);
+});
+
 app.post("/api/createOrder", (req, res, next) => {
   db.createOrder(req.user.id, req.body)
     .then(order => res.send(order))
@@ -85,6 +91,12 @@ app.post("/api/getPromo", (req, res, next) => {
     .then(promo => {
       res.send(promo);
     })
+    .catch(next);
+});
+
+app.post("/api/sendPromo", (req, res, next) => {
+  db.applyPromo(req.body.cartId, req.body.promoId)
+    .then(response => res.send(response))
     .catch(next);
 });
 

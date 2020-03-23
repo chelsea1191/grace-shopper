@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PromoDisplay from "./PromoDisplay.js";
 
 const Cart = ({
   promo,
-  setPromo,
-  promoDescription,
-  setPromoDescription,
   multiplier,
-  setMultiplier,
+  promoDescription,
+  setPromo,
+  allPromos,
   subtotal,
   lineItems,
   cart,
   createOrder,
   removeFromCart,
+  setIsSubmitted,
   products
 }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  let cartId = cart.id;
+  let promoId;
 
   const onChange = ev => {
     let uppercaseInput = ev.target.value.toUpperCase();
@@ -26,10 +27,11 @@ const Cart = ({
   const onPromoSubmit = ev => {
     ev.preventDefault();
     setIsSubmitted(true);
-    axios.post("/api/getPromo", { promo }).then(response => {
-      setPromoDescription(response.data.description);
-      setMultiplier(response.data.multiplier);
-    });
+    const filtered = allPromos.filter(each => each.code === promo)[0];
+    if (filtered) {
+      promoId = filtered.id;
+      axios.post("/api/sendPromo", { cartId, promoId });
+    }
   };
 
   return (
@@ -67,12 +69,10 @@ const Cart = ({
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
         <button>submit promo code</button>
-        {isSubmitted && (
-          <PromoDisplay
-            promoDescription={promoDescription}
-            multiplier={multiplier}
-          />
-        )}
+        <PromoDisplay
+          promoDescription={promoDescription}
+          multiplier={multiplier}
+        />
       </form>
     </div>
   );

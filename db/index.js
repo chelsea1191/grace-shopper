@@ -13,7 +13,9 @@ const {
   getPromo,
   removeFromCart,
   createOrder,
-  getLineItems
+  getLineItems,
+  applyPromo,
+  getAllPromos
 } = require("./userMethods");
 
 const getProducts = amount => {
@@ -44,6 +46,14 @@ const sync = async () => {
     DROP TABLE IF EXISTS promos;
     DROP TABLE IF EXISTS users;
     DROP TABLE IF EXISTS products;
+
+    CREATE TABLE promos(
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      code VARCHAR(100) NOT NULL UNIQUE,
+      description VARCHAR(300) NOT NULL,
+      multiplier DECIMAL NOT NULL
+    );
+
     CREATE TABLE users(
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       username VARCHAR(100) NOT NULL UNIQUE,
@@ -51,6 +61,7 @@ const sync = async () => {
       role VARCHAR(20) DEFAULT 'USER',
       CHECK (char_length(username) > 0)
     );
+
 
     CREATE TABLE products(
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -62,18 +73,12 @@ const sync = async () => {
       CHECK (char_length(name) > 0)
     );
 
-    CREATE TABLE promos(
-      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      code VARCHAR(100) NOT NULL UNIQUE,
-      description VARCHAR(300) NOT NULL,
-      multiplier DECIMAL NOT NULL
-    );
-
     CREATE TABLE orders(
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       "userId" UUID REFERENCES users(id) NOT NULL,
       status VARCHAR(10) DEFAULT 'CART',
       total DECIMAL DEFAULT 0,
+      promo UUID REFERENCES promos(id) DEFAULT NULL,
       "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
 
@@ -152,5 +157,7 @@ module.exports = {
   addToCart,
   removeFromCart,
   createOrder,
-  getLineItems
+  getLineItems,
+  applyPromo,
+  getAllPromos
 };
