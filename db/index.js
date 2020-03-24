@@ -52,7 +52,8 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       code VARCHAR(100) NOT NULL UNIQUE,
       description VARCHAR(300) NOT NULL,
-      multiplier DECIMAL NOT NULL
+      multiplier DECIMAL NOT NULL,
+      status VARCHAR
     );
 
     CREATE TABLE users(
@@ -99,9 +100,9 @@ const sync = async () => {
       zip VARCHAR(100) NOT NULL
     );
 
-    INSERT INTO promos (code, description, multiplier) VALUES ('TENOFF', 'take 10% off any purchase', '0.9');
-    INSERT INTO promos (code, description, multiplier) VALUES ('SPRING20', 'take 20% off any purchase', '0.8');
-    INSERT INTO promos (code, description, multiplier) VALUES ('UNF40', 'take 40% off any purchase', '0.6');
+    INSERT INTO promos (code, description, multiplier, status) VALUES ('TENOFF', 'take 10% off any purchase', '0.9', 'active');
+    INSERT INTO promos (code, description, multiplier, status) VALUES ('SPRING20', 'take 20% off any purchase', '0.8', 'active');
+    INSERT INTO promos (code, description, multiplier, status) VALUES ('UNF40', 'take 40% off any purchase', '0.6', 'inactive');
   `;
 
   await client.query(SQL);
