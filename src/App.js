@@ -26,14 +26,17 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [products, setProducts] = useState([]);
   const [promo, setPromo] = useState([]);
-  const [promoDescription, setPromoDescription] = useState(null);
-  const [multiplier, setMultiplier] = useState(null);
+  const [allPromos, setAllPromos] = useState([]);
   const [subtotal, setSubtotal] = useState([]);
   const [lineItems, setLineItems] = useState([]);
+  const [multiplier, setMultiplier] = useState(null);
+  const [promoDescription, setPromoDescription] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
-    axios.get('/api/products').then(response => setProducts(response.data));
-  }, []);
+
+  axios.get("/api/products").then(response => setProducts(response.data));
+  }, [auth]);
 
   useEffect(() => {
     if (auth.id) {
@@ -45,12 +48,29 @@ const App = () => {
   }, [auth]);
 
   useEffect(() => {
+    axios.get("/api/getPromos").then(response => {
+      setAllPromos(response.data);
+    });
+  }, [auth]);
+
+  useEffect(() => {
     if (auth.id) {
       axios.get('/api/getCart', headers()).then(response => {
         setCart(response.data);
+        console.log("cart: ", response.data);
+        if (response.data.promo === null || response.data.promo === undefined) {
+          console.log("promo is null");
+        } else {
+          console.log("promo is: ", response.data.promo);
+          let filtered = allPromos.filter(
+            each => each.id === response.data.promo
+          );
+          setMultiplier(filtered[0].multiplier);
+          setPromoDescription(filtered[0].description);
+        }
       });
     }
-  }, [auth]);
+  }, [auth, isSubmitted]);
 
   useEffect(() => {
     if (auth.id) {
@@ -59,21 +79,6 @@ const App = () => {
       });
     }
   }, [auth]);
-
-  // useEffect(() => {
-  //   //get from local storage
-  //   const data = localStorage.getItem("multiplier");
-  //   setMultiplier(data);
-  // }, [auth]);
-
-  // useEffect(() => {
-  //   //store in local storage so it persists
-  //   localStorage.setItem("multiplier", multiplier);
-  // }, []);
-
-  useEffect(() => {
-    getSubtotal();
-  }, [cart, lineItems, multiplier]);
 
   const login = async credentials => {
     const token = (await axios.post('/api/auth', credentials)).data.token;
@@ -102,6 +107,10 @@ const App = () => {
     });
   }, []);
 
+  useEffect(() => {
+    getSubtotal();
+  }, [cart, multiplier]);
+
   const createOrder = () => {
     const token = window.localStorage.getItem('token');
     axios
@@ -114,6 +123,7 @@ const App = () => {
       .then(response => {
         setCart(response.data);
       });
+    setMultiplier(null);
   };
 
   const addToCart = productId => {
@@ -129,12 +139,14 @@ const App = () => {
         setLineItems(updated);
       }
     });
+    getSubtotal();
   };
 
   const removeFromCart = lineItemId => {
     axios.delete(`/api/removeFromCart/${lineItemId}`, headers()).then(() => {
       setLineItems(lineItems.filter(_lineItem => _lineItem.id !== lineItemId));
     });
+    getSubtotal();
   };
 
   const totalItemsInCart = () => {
@@ -144,22 +156,23 @@ const App = () => {
       0
     );
   };
+
   const getSubtotal = () => {
     //gets subtotal of entire cart-- did not take tax into consideration yet
-    let total = 0;
     lineItems
       .filter(lineItem => lineItem.orderId === cart.id)
       .map(lineItem => {
         let product = products.find(
           product => product.id === lineItem.productId
         );
-        if (multiplier == null || undefined) {
-          total = total + product.price * lineItem.quantity;
+        if (multiplier == null || multiplier == undefined) {
+          console.log("multiplier is null");
+          setSubtotal(product.price * lineItem.quantity);
         } else {
-          total = multiplier * (total + product.price * lineItem.quantity);
+          console.log("multiplier is: ", multiplier);
+          setSubtotal(multiplier * (product.price * lineItem.quantity));
         }
       });
-    setSubtotal(total.toFixed(2));
   };
 
   const { view } = params;
@@ -233,16 +246,16 @@ const App = () => {
             <Route path="/cart">
               <Cart
                 promo={promo}
-                promoDescription={promoDescription}
-                setPromoDescription={setPromoDescription}
                 multiplier={multiplier}
+                promoDescription={promoDescription}
+                allPromos={allPromos}
                 setPromo={setPromo}
-                setMultiplier={setMultiplier}
                 subtotal={subtotal}
                 lineItems={lineItems}
                 removeFromCart={removeFromCart}
                 cart={cart}
                 createOrder={createOrder}
+                setIsSubmitted={setIsSubmitted}
                 products={products}
               />{' '}
             </Route>
