@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
-import qs from "qs";
-import axios from "axios";
-import Login from "./Login";
-import Register from "./Register";
-import Orders from "./Orders";
-import Cart from "./Cart";
-import Products from "./Products";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import qs from 'qs';
+import axios from 'axios';
+import Login from './Login';
+import Register from './Register';
+import Orders from './Orders';
+import Cart from './Cart';
+import Products from './Products';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 const headers = () => {
-  const token = window.localStorage.getItem("token");
+  const token = window.localStorage.getItem('token');
   return {
     headers: {
-      authorization: token
-    }
+      authorization: token,
+    },
   };
 };
 
@@ -34,13 +34,14 @@ const App = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
-    axios.get("/api/products").then(response => setProducts(response.data));
+
+  axios.get("/api/products").then(response => setProducts(response.data));
   }, [auth]);
 
   useEffect(() => {
     if (auth.id) {
-      const token = window.localStorage.getItem("token");
-      axios.get("/api/getLineItems", headers()).then(response => {
+      const token = window.localStorage.getItem('token');
+      axios.get('/api/getLineItems', headers()).then(response => {
         setLineItems(response.data);
       });
     }
@@ -54,7 +55,7 @@ const App = () => {
 
   useEffect(() => {
     if (auth.id) {
-      axios.get("/api/getCart", headers()).then(response => {
+      axios.get('/api/getCart', headers()).then(response => {
         setCart(response.data);
         console.log("cart: ", response.data);
         if (response.data.promo === null || response.data.promo === undefined) {
@@ -73,26 +74,26 @@ const App = () => {
 
   useEffect(() => {
     if (auth.id) {
-      axios.get("/api/getOrders", headers()).then(response => {
+      axios.get('/api/getOrders', headers()).then(response => {
         setOrders(response.data);
       });
     }
   }, [auth]);
 
   const login = async credentials => {
-    const token = (await axios.post("/api/auth", credentials)).data.token;
-    window.localStorage.setItem("token", token);
+    const token = (await axios.post('/api/auth', credentials)).data.token;
+    window.localStorage.setItem('token', token);
     exchangeTokenForAuth();
   };
 
   const exchangeTokenForAuth = async () => {
-    const response = await axios.get("/api/auth", headers());
+    const response = await axios.get('/api/auth', headers());
     setAuth(response.data);
   };
 
   const logout = () => {
-    window.location.hash = "#";
-    window.localStorage.removeItem("token");
+    window.location.hash = '#';
+    window.localStorage.removeItem('token');
     setAuth({});
   };
 
@@ -101,7 +102,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("hashchange", () => {
+    window.addEventListener('hashchange', () => {
       setParams(qs.parse(window.location.hash.slice(1)));
     });
   }, []);
@@ -111,13 +112,13 @@ const App = () => {
   }, [cart, multiplier]);
 
   const createOrder = () => {
-    const token = window.localStorage.getItem("token");
+    const token = window.localStorage.getItem('token');
     axios
-      .post("/api/createOrder", { subtotal }, headers())
+      .post('/api/createOrder', { subtotal }, headers())
       .then(response => {
         setOrders([response.data, ...orders]);
-        const token = window.localStorage.getItem("token");
-        return axios.get("/api/getCart", headers());
+        const token = window.localStorage.getItem('token');
+        return axios.get('/api/getCart', headers());
       })
       .then(response => {
         setCart(response.data);
@@ -126,7 +127,7 @@ const App = () => {
   };
 
   const addToCart = productId => {
-    axios.post("/api/addToCart", { productId }, headers()).then(response => {
+    axios.post('/api/addToCart', { productId }, headers()).then(response => {
       const lineItem = response.data;
       const found = lineItems.find(_lineItem => _lineItem.id === lineItem.id);
       if (!found) {
@@ -234,7 +235,6 @@ const App = () => {
               <button onClick={logout}>Logout {auth.username} </button>
             </li>
           </nav>
-
           <Switch>
             <Route path="/orders">
               <Orders
@@ -257,7 +257,7 @@ const App = () => {
                 createOrder={createOrder}
                 setIsSubmitted={setIsSubmitted}
                 products={products}
-              />{" "}
+              />{' '}
             </Route>
             <Route path="/">
               <Products addToCart={addToCart} products={products} />

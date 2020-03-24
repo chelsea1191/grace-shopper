@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PromoDisplay from "./PromoDisplay.js";
@@ -14,6 +15,7 @@ const Cart = ({
   cart,
   createOrder,
   removeFromCart,
+
   setIsSubmitted,
   products
 }) => {
@@ -28,6 +30,7 @@ const Cart = ({
   const onPromoSubmit = ev => {
     ev.preventDefault();
     setIsSubmitted(true);
+
     const filtered = allPromos.filter(each => each.code === promo)[0];
     if (filtered) {
       promoId = filtered.id;
@@ -64,8 +67,20 @@ const Cart = ({
             return (
               <li key={lineItem.id}>
                 {product && product.name} <br />
-                <span className="quantity">Quantity: {lineItem.quantity}</span>
-                <button onClick={() => removeFromCart(lineItem.id)}>
+                {product.description}
+                <div className="quantity">
+                  <label htmlFor="name">Quantity: </label>
+                  <input
+                    type="text"
+                    name="quantity"
+                    value={lineItem.quantity}
+                  />
+                </div>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => removeFromCart(lineItem.id)}
+                >
+
                   Remove From Cart
                 </button>
                 item subtotal: $
@@ -78,6 +93,7 @@ const Cart = ({
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
         <button>submit promo code</button>
+
         <PromoDisplay
           promoDescription={promoDescription}
           multiplier={multiplier}
