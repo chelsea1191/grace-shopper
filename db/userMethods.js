@@ -98,6 +98,18 @@ const getLineItems = async userId => {
   return (await client.query(SQL, [userId])).rows;
 };
 
+const applyPromo = async (cartId, promoId) => {
+  await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
+    cartId,
+    promoId
+  ]);
+};
+
+const getAllPromos = async () => {
+  const results = await client.query(`SELECT * FROM promos;`);
+  return results.rows;
+};
+
 module.exports = {
   getCart,
   getOrders,
@@ -105,5 +117,7 @@ module.exports = {
   getPromo,
   removeFromCart,
   createOrder,
-  getLineItems
+  getLineItems,
+  applyPromo,
+  getAllPromos
 };
