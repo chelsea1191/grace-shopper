@@ -7,7 +7,7 @@ nav {
   border-radius: 10px;
   background-color: powderblue;
   display: flex;
-  justify-content: space-around;
+  justify-content: end;
   margin-bottom: 1rem;
 }
 
@@ -25,6 +25,15 @@ form {
 
 form > * {
   margin: 1rem;
+}
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 33.333333%;
+}
+.card {
+  width: 10rem;
+  margin: 10px;
 }
 
 .horizontal {
@@ -65,7 +74,7 @@ li > * {
   color: teal;
   font-weight: bold;
 }
-
+/*
 .productImg > img {
   border-radius: 50%;
 }
@@ -79,4 +88,4 @@ li > * {
   display: flex;
   flex-direction: column;
   align-content: space-evenly;
-}
+} */

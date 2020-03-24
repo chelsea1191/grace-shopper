@@ -56,7 +56,7 @@ const App = () => {
     if (auth.id) {
       axios.get("/api/getCart", headers()).then(response => {
         setCart(response.data);
-        console.log("cart: ", response.data);
+        console.log("this user's cart: ", response.data);
         if (response.data.promo === null || response.data.promo === undefined) {
           console.log("promo is null");
         } else {
@@ -123,6 +123,8 @@ const App = () => {
         setCart(response.data);
       });
     setMultiplier(null);
+    setPromoDescription("");
+    setSubtotal(0);
   };
 
   const addToCart = productId => {
@@ -227,11 +229,13 @@ const App = () => {
             </li>
             <li className="nav-link">
               <Link className="link" to="/orders">
-                Orders
+                My Orders
               </Link>
             </li>
             <li className="nav-link">
-              <button onClick={logout}>Logout {auth.username} </button>
+              <button type="button" class="btn btn-secondary" onClick={logout}>
+                Logout {auth.username}{" "}
+              </button>
             </li>
           </nav>
 
@@ -256,6 +260,7 @@ const App = () => {
                 cart={cart}
                 createOrder={createOrder}
                 setIsSubmitted={setIsSubmitted}
+                isSubmitted={isSubmitted}
                 products={products}
               />{" "}
             </Route>
