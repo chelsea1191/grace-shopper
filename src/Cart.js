@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PromoDisplay from './PromoDisplay.js';
 import verify from './verify';
+
 
 const Cart = ({
   promo,
@@ -15,8 +17,10 @@ const Cart = ({
   createOrder,
   removeFromCart,
   setIsSubmitted,
-  products,
-  setLineItems,
+  isSubmitted,
+  products, 
+  setLineItems
+
 }) => {
   let cartId = cart.id;
   let promoId;
@@ -57,7 +61,8 @@ const Cart = ({
       <h2>Cart - {cart.id && cart.id.slice(0, 4)}</h2>
       <button
         type="button"
-        className="btn btn-dark"
+        type="button"
+        class="btn btn-secondary"
         disabled={!lineItems.find(lineItem => lineItem.orderId === cart.id)}
         onClick={createOrder}
       >
@@ -98,19 +103,26 @@ const Cart = ({
       <p>cart subtotal: ${subtotal}</p>
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
-        <button>submit promo code</button>
-
-        <PromoDisplay
-          promoDescription={promoDescription}
-          multiplier={multiplier}
-        />
+        <button type="button" class="btn btn-secondary">
+          submit promo code
+        </button>
+        {isSubmitted && (
+          <PromoDisplay
+            promo={promo}
+            allPromos={allPromos}
+            promoDescription={promoDescription}
+            multiplier={multiplier}
+          />
+        )}
       </form>
       <form onSubmit={handleAddress}>
         <input placeholder="Address" />
         <input placeholder="City" />
         <input placeholder="State" />
         <input placeholder="Zip" />
-        <button>Use This Address</button>
+        <button type="button" class="btn btn-secondary">
+          Use This Address
+        </button>
       </form>
     </div>
   );
