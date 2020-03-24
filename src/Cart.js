@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import PromoDisplay from "./PromoDisplay.js";
-import verify from "./verify";
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import PromoDisplay from './PromoDisplay.js';
+import verify from './verify';
+
 
 const Cart = ({
   promo,
@@ -14,10 +16,11 @@ const Cart = ({
   cart,
   createOrder,
   removeFromCart,
-
   setIsSubmitted,
   isSubmitted,
-  products
+  products, 
+  setLineItems
+
 }) => {
   let cartId = cart.id;
   let promoId;
@@ -34,7 +37,7 @@ const Cart = ({
     const filtered = allPromos.filter(each => each.code === promo)[0];
     if (filtered) {
       promoId = filtered.id;
-      axios.post("/api/sendPromo", { cartId, promoId });
+      axios.post('/api/sendPromo', { cartId, promoId });
     }
   };
 
@@ -44,6 +47,13 @@ const Cart = ({
     // await axios
     // 	.post("/api/address", { address, user })
     // 	.then(response => console.log(response));
+  };
+
+  const changeQuantity = (lineItem, e) => {
+    const newLineItem = { ...lineItem, quantity: Number(e.target.value) };
+    const filteredLineItems = lineItems.filter(i => i.id !== newLineItem.id);
+    const updatedLineItems = [...filteredLineItems, newLineItem];
+    setLineItems(updatedLineItems);
   };
 
   return (
@@ -74,7 +84,8 @@ const Cart = ({
                   <input
                     type="text"
                     name="quantity"
-                    value={lineItem.quantity}
+                    defaultValue={lineItem.quantity}
+                    onChange={e => changeQuantity(lineItem, e)}
                   />
                 </div>
                 <button

@@ -34,8 +34,7 @@ const App = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
-
-  axios.get("/api/products").then(response => setProducts(response.data));
+    axios.get('/api/products').then(response => setProducts(response.data));
   }, [auth]);
 
   useEffect(() => {
@@ -48,7 +47,7 @@ const App = () => {
   }, [auth]);
 
   useEffect(() => {
-    axios.get("/api/getPromos").then(response => {
+    axios.get('/api/getPromos').then(response => {
       setAllPromos(response.data);
     });
   }, [auth]);
@@ -57,11 +56,13 @@ const App = () => {
     if (auth.id) {
       axios.get('/api/getCart', headers()).then(response => {
         setCart(response.data);
+
         console.log("this user's cart: ", response.data);
+
         if (response.data.promo === null || response.data.promo === undefined) {
-          console.log("promo is null");
+          console.log('promo is null');
         } else {
-          console.log("promo is: ", response.data.promo);
+          console.log('promo is: ', response.data.promo);
           let filtered = allPromos.filter(
             each => each.id === response.data.promo
           );
@@ -168,10 +169,10 @@ const App = () => {
           product => product.id === lineItem.productId
         );
         if (multiplier == null || multiplier == undefined) {
-          console.log("multiplier is null");
+          console.log('multiplier is null');
           setSubtotal(product.price * lineItem.quantity);
         } else {
-          console.log("multiplier is: ", multiplier);
+          console.log('multiplier is: ', multiplier);
           setSubtotal(multiplier * (product.price * lineItem.quantity));
         }
       });
@@ -262,7 +263,9 @@ const App = () => {
                 setIsSubmitted={setIsSubmitted}
                 isSubmitted={isSubmitted}
                 products={products}
-              />{' '}
+                lineItems={lineItems}
+                setLineItems={setLineItems}
+              />
             </Route>
             <Route path="/">
               <Products addToCart={addToCart} products={products} />
