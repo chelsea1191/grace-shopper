@@ -26,14 +26,19 @@ form {
 form > * {
   margin: 1rem;
 }
-.container {
+.container-fluid {
   display: flex;
   flex-wrap: wrap;
   flex-basis: 33.333333%;
+  margin: 10px;
+  padding: 5px;
 }
 .card {
-  width: 10rem;
+  width: 12rem;
   margin: 10px;
+}
+.card-price {
+  font-weight: bold;
 }
 
 .horizontal {
@@ -74,18 +79,10 @@ li > * {
   color: teal;
   font-weight: bold;
 }
-/*
-.productImg > img {
-  border-radius: 50%;
+.fa {
+  font-size: 25px;
 }
 
-.productBox {
-  display: flex;
-  flex-direction: row;
+.checked {
+  color: orange;
 }
-
-.productText {
-  display: flex;
-  flex-direction: column;
-  align-content: space-evenly;
-} */

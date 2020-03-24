@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PromoDisplay from "./PromoDisplay.js";
@@ -82,7 +81,6 @@ const Cart = ({
                   className="btn btn-outline-danger"
                   onClick={() => removeFromCart(lineItem.id)}
                 >
-
                   Remove From Cart
                 </button>
                 item subtotal: $
@@ -94,7 +92,6 @@ const Cart = ({
       <p>cart subtotal: ${subtotal}</p>
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
-<<<<<<< HEAD
         <button type="button" class="btn btn-secondary">
           submit promo code
         </button>
@@ -106,14 +103,6 @@ const Cart = ({
             multiplier={multiplier}
           />
         )}
-=======
-        <button>submit promo code</button>
-
-        <PromoDisplay
-          promoDescription={promoDescription}
-          multiplier={multiplier}
-        />
->>>>>>> master
       </form>
       <form onSubmit={handleAddress}>
         <input placeholder="Address" />

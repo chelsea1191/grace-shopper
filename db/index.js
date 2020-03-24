@@ -25,7 +25,7 @@ const getProducts = amount => {
     let price = faker.commerce.price(0.99, 20.0, 2);
     let text = faker.lorem.sentence(5);
     let rating = faker.random.number({ min: 55, max: 100 });
-    let img = faker.image.imageUrl(50, 50, "animals", true);
+    let img = faker.image.imageUrl(300, 300, "animals", true);
     let newProd = {
       name: prodName,
       price: price,
