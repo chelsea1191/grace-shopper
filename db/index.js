@@ -7,6 +7,12 @@ const models = ({ products, users, orders, lineItems } = require("./models"));
 const faker = require("faker");
 
 const {
+  changePromoStatus,
+  getAllUsers,
+  addNewPromo
+} = require("./adminMethods");
+
+const {
   getCart,
   getOrders,
   addToCart,
@@ -15,7 +21,8 @@ const {
   createOrder,
   getLineItems,
   applyPromo,
-  getAllPromos
+  getAllPromos,
+  removePromo
 } = require("./userMethods");
 
 const getProducts = amount => {
@@ -183,5 +190,9 @@ module.exports = {
   createOrder,
   getLineItems,
   applyPromo,
-  getAllPromos
+  getAllPromos,
+  removePromo,
+  changePromoStatus,
+  getAllUsers,
+  addNewPromo
 };

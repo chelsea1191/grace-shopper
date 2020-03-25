@@ -10,7 +10,7 @@ const Products = ({ products, addToCart }) => {
           return (
             <div className="card" key={product.id}>
               <img className="card-img-top" src={product.image}></img>
-              <div class="card-body">
+              <div className="card-body">
                 <h5 className="card-title">{product.name}</h5>
                 <span className="card-text">
                   Description: {product.description}
