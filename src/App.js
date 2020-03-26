@@ -7,6 +7,7 @@ import Orders from "./Orders";
 import Cart from "./Cart";
 import Products from "./Products";
 import AdminPromos from "./AdminPromos";
+import AdminUsers from "./AdminUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -33,10 +34,17 @@ const App = () => {
   const [multiplier, setMultiplier] = useState(null);
   const [promoDescription, setPromoDescription] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     axios.get("/api/products").then(response => setProducts(response.data));
   }, [auth]);
+
+  useEffect(() => {
+    axios.get("/api/getAllUsers").then(response => {
+      setUsers(response.data);
+    });
+  }, [auth, users]);
 
   useEffect(() => {
     if (auth.id) {
@@ -57,7 +65,6 @@ const App = () => {
     if (auth.id) {
       axios.get("/api/getCart", headers()).then(response => {
         setCart(response.data);
-        console.log("this user's cart: ", response.data);
         if (response.data.promo === null || response.data.promo === undefined) {
         } else {
           let filtered = allPromos.filter(
@@ -244,6 +251,11 @@ const App = () => {
               </Link>
             </li>
             <li className="nav-link">
+              <Link className="link" to="/adminusers">
+                Edit Users (admin)
+              </Link>
+            </li>
+            <li className="nav-link">
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -263,6 +275,9 @@ const App = () => {
             </Route>
             <Route path="/adminpromos">
               <AdminPromos allPromos={allPromos} />
+            </Route>
+            <Route path="/adminusers">
+              <AdminUsers users={users} />
             </Route>
             <Route path="/cart">
               <Cart

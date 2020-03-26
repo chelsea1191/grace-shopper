@@ -8,7 +8,8 @@ const changePromoStatus = async (promoId, status) => {
 };
 
 const getAllUsers = async () => {
-  return await client.query("SELECT * from users").rows;
+  const users = await client.query(`SELECT * from users`);
+  return await users.rows;
 };
 
 const addNewPromo = async (code, description, multiplier) => {
@@ -18,8 +19,16 @@ const addNewPromo = async (code, description, multiplier) => {
   );
 };
 
+const changeUserStatus = async (userId, status) => {
+  await client.query(`UPDATE users SET status=$2 WHERE id=$1`, [
+    userId,
+    status
+  ]);
+};
+
 module.exports = {
   changePromoStatus,
   getAllUsers,
-  addNewPromo
+  addNewPromo,
+  changeUserStatus
 };

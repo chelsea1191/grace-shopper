@@ -9,7 +9,8 @@ const faker = require("faker");
 const {
   changePromoStatus,
   getAllUsers,
-  addNewPromo
+  addNewPromo,
+  changeUserStatus
 } = require("./adminMethods");
 
 const {
@@ -68,6 +69,7 @@ const sync = async () => {
       username VARCHAR(100) NOT NULL UNIQUE,
       password VARCHAR(100) NOT NULL,
       role VARCHAR(20) DEFAULT 'USER',
+      status VARCHAR,
       CHECK (char_length(username) > 0)
     );
 
@@ -118,17 +120,20 @@ const sync = async () => {
     lucy: {
       username: "lucy",
       password: "LUCY",
-      role: "ADMIN"
+      role: "ADMIN",
+      status: "active"
     },
     moe: {
       username: "moe",
       password: "MOE",
-      role: null
+      role: null,
+      status: "active"
     },
     curly: {
       username: "larry",
       password: "LARRY",
-      role: null
+      role: null,
+      status: "active"
     }
   };
 
@@ -194,5 +199,6 @@ module.exports = {
   removePromo,
   changePromoStatus,
   getAllUsers,
-  addNewPromo
+  addNewPromo,
+  changeUserStatus
 };

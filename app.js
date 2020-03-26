@@ -56,6 +56,18 @@ app.get("/api/auth", isLoggedIn, (req, res, next) => {
   res.send(req.user);
 });
 
+app.get("/api/getAllUsers", (req, res, next) => {
+  db.getAllUsers()
+    .then(users => res.send(users))
+    .catch(next);
+}); /////////////
+
+app.post("/api/changeUserStatus", (req, res, next) => {
+  db.changeUserStatus(req.body.userId, req.body.selection)
+    .then(response => res.send(response))
+    .catch(next);
+});
+
 app.get("/api/getCart", (req, res, next) => {
   db.getCart(req.user.id)
     .then(cart => res.send(cart))
