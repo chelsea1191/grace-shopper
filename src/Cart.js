@@ -1,13 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import PromoDisplay from './PromoDisplay.js';
-import verify from './verify';
-
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import PromoDisplay from "./PromoDisplay.js";
+import verify from "./verify";
 
 const Cart = ({
   promo,
-  multiplier,
   promoDescription,
   setPromo,
   allPromos,
@@ -18,9 +15,9 @@ const Cart = ({
   removeFromCart,
   setIsSubmitted,
   isSubmitted,
-  products, 
-  setLineItems
-
+  products,
+  setLineItems,
+  removePromo
 }) => {
   let cartId = cart.id;
   let promoId;
@@ -32,12 +29,15 @@ const Cart = ({
 
   const onPromoSubmit = ev => {
     ev.preventDefault();
-    setIsSubmitted(true);
-
     const filtered = allPromos.filter(each => each.code === promo)[0];
-    if (filtered) {
+    if (filtered.status === "active") {
+      setIsSubmitted(true);
+      //if its a valid active promo code
       promoId = filtered.id;
-      axios.post('/api/sendPromo', { cartId, promoId });
+      axios.post("/api/sendPromo", { cartId, promoId });
+    } else {
+      //if inactive or invalid
+      setIsSubmitted("invalid");
     }
   };
 
@@ -62,7 +62,7 @@ const Cart = ({
       <button
         type="button"
         type="button"
-        class="btn btn-secondary"
+        className="btn btn-secondary"
         disabled={!lineItems.find(lineItem => lineItem.orderId === cart.id)}
         onClick={createOrder}
       >
@@ -78,7 +78,7 @@ const Cart = ({
             return (
               <li key={lineItem.id}>
                 {product && product.name} <br />
-                {product.description}
+                {product.description} <br />${product.price} each
                 <div className="quantity">
                   <label htmlFor="name">Quantity: </label>
                   <input
@@ -103,15 +103,15 @@ const Cart = ({
       <p>cart subtotal: ${subtotal}</p>
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
-        <button type="button" class="btn btn-secondary">
+        <button type="button" className="btn btn-secondary">
           submit promo code
         </button>
         {isSubmitted && (
           <PromoDisplay
-            promo={promo}
-            allPromos={allPromos}
+            isSubmitted={isSubmitted}
+            cart={cart}
             promoDescription={promoDescription}
-            multiplier={multiplier}
+            removePromo={removePromo}
           />
         )}
       </form>
@@ -120,7 +120,7 @@ const Cart = ({
         <input placeholder="City" />
         <input placeholder="State" />
         <input placeholder="Zip" />
-        <button type="button" class="btn btn-secondary">
+        <button type="button" className="btn btn-secondary">
           Use This Address
         </button>
       </form>
