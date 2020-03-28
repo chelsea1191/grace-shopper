@@ -16,8 +16,8 @@ const headers = () => {
   const token = window.localStorage.getItem('token');
   return {
     headers: {
-      authorization: token
-    }
+      authorization: token,
+    },
   };
 };
 
@@ -223,31 +223,31 @@ const App = () => {
       <Router>
         <div>
           <h1>Grace Shopper</h1>
-          <nav className='navbar navbar-expand-lg navbar-light'>
-            <li className='nav-link active'>
-              <Link className='link' to='/login'>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/login">
                 Login
               </Link>
             </li>
-            <li className='nav-link active'>
-              <Link className='link' to='/register'>
+            <li className="nav-link active">
+              <Link className="link" to="/register">
                 Register
               </Link>
             </li>
-            <li className='nav-link active'>
-              <Link className='link' to='/guest'>
+            <li className="nav-link active">
+              <Link className="link" to="/guest">
                 Browse Products
               </Link>
             </li>
           </nav>
           <Switch>
-            <Route path='/login'>
+            <Route path="/login">
               <Login login={login} />
             </Route>
-            <Route path='/register'>
+            <Route path="/register">
               <CreateUser />
             </Route>
-            <Route path='/guest'>
+            <Route path="/guest">
               <Products addToCart={addToCart} products={products} />
             </Route>
           </Switch>
@@ -259,45 +259,45 @@ const App = () => {
       <Router>
         <div>
           <h1>Grace Shopper</h1>
-          <nav className='navbar navbar-expand-lg navbar-light'>
-            <li className='nav-link active'>
-              <Link className='link' to='/'>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/">
                 Products
               </Link>
             </li>
             <li>
-              <Link to='/cart'>
-                <span className='fa-layers fa-fw fa-3x'>
+              <Link to="/cart">
+                <span className="fa-layers fa-fw fa-3x">
                   <FontAwesomeIcon icon={faShoppingCart} />
-                  <span className='fa-layers-counter'>
+                  <span className="fa-layers-counter">
                     {totalItemsInCart()}
                   </span>
                 </span>
               </Link>
             </li>
-            <li className='nav-link'>
-              <Link className='link' to='/orders'>
+            <li className="nav-link">
+              <Link className="link" to="/orders">
                 My Orders
               </Link>
             </li>
             {isAdmin === true && (
-              <li className='nav-link'>
-                <Link className='link' to='/adminpromos'>
+              <li className="nav-link">
+                <Link className="link" to="/adminpromos">
                   Edit Promos
                 </Link>
               </li>
             )}
             {isAdmin === true && (
-              <li className='nav-link'>
-                <Link className='link' to='/adminusers'>
+              <li className="nav-link">
+                <Link className="link" to="/adminusers">
                   Edit Users
                 </Link>
               </li>
             )}
-            <li className='nav-link'>
+            <li className="nav-link">
               <button
-                type='button'
-                className='btn btn-secondary'
+                type="button"
+                className="btn btn-secondary"
                 onClick={logout}
               >
                 Logout {auth.username}
@@ -305,7 +305,7 @@ const App = () => {
             </li>
           </nav>
           <Switch>
-            <Route path='/orders'>
+            <Route path="/orders">
               <Orders
                 lineItems={lineItems}
                 products={products}
@@ -314,14 +314,14 @@ const App = () => {
               />
             </Route>
 
-            <Route path='/adminpromos'>
+            <Route path="/adminpromos">
               <AdminPromos allPromos={allPromos} setAllPromos={setAllPromos} />
             </Route>
 
-            <Route path='/adminusers'>
+            <Route path="/adminusers">
               <AdminUsers users={users} setUsers={setUsers} />
             </Route>
-            <Route path='/cart'>
+            <Route path="/cart">
               <Cart
                 promo={promo}
                 promoDescription={promoDescription}
@@ -338,10 +338,11 @@ const App = () => {
                 lineItems={lineItems}
                 setLineItems={setLineItems}
                 removePromo={removePromo}
+                headers={headers}
                 total={total}
               />
             </Route>
-            <Route path='/'>
+            <Route path="/">
               <Products addToCart={addToCart} products={products} />
             </Route>
           </Switch>
