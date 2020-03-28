@@ -1,31 +1,43 @@
 import React from "react";
+import Rating from "./Rating";
 
 const Products = ({ products, addToCart }) => {
-	return (
-		<div>
-			<h2>Products</h2>
-			<ul>
-				{products.map(product => {
-					return (
-						<li key={product.id}>
-							<div className="productBox">
-								<div className="productImg">
-									<img src={product.image}></img>
-								</div>
-								<div className="productText">
-									<span>{product.name}</span>
-									<span>Description: {product.description}</span>
-									<span>User Rating: {product.rating}</span>
-									<span>${Number(product.price).toFixed(2)}</span>
-								</div>
-							</div>
-							<button onClick={() => addToCart(product.id)}>Add to Cart</button>
-						</li>
-					);
-				})}
-			</ul>
-		</div>
-	);
+  return (
+    <div>
+      <h2>Products</h2>
+      <div className="container-fluid">
+        {products.map(product => {
+          return (
+            <div className="card" key={product.id}>
+              <img className="card-img-top" src={product.image}></img>
+              <div className="card-body">
+                <h5 className="card-title">{product.name}</h5>
+                <span className="card-text">
+                  Description: {product.description}
+                </span>{" "}
+                <br />
+                <span className="card-text">
+                  User Rating: {product.rating}
+                </span>{" "}
+                <br />
+                <span className="card-price">
+                  ${Number(product.price).toFixed(2)}
+                </span>
+                <Rating rating={product.rating} />
+              </div>
+              <button
+                type="button"
+                className="btn btn-dark"
+                onClick={() => addToCart(product.id)}
+              >
+                Add to Cart
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default Products;

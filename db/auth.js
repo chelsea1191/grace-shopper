@@ -47,5 +47,5 @@ module.exports = {
 	findUserFromToken,
 	authenticate,
 	compare,
-	hash
+	hashr
 };

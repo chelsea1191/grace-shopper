@@ -5,7 +5,6 @@ import verify from "./verify";
 
 const Cart = ({
 	promo,
-	multiplier,
 	promoDescription,
 	setPromo,
 	allPromos,
@@ -14,10 +13,11 @@ const Cart = ({
 	cart,
 	createOrder,
 	removeFromCart,
-	isSubmitted,
 	setIsSubmitted,
+	isSubmitted,
 	products,
-	auth
+	setLineItems,
+	removePromo
 }) => {
 	let cartId = cart.id;
 	let promoId;
@@ -29,12 +29,15 @@ const Cart = ({
 
 	const onPromoSubmit = ev => {
 		ev.preventDefault();
-		setIsSubmitted(true);
-
 		const filtered = allPromos.filter(each => each.code === promo)[0];
-		if (filtered) {
+		if (filtered.status === "active") {
+			setIsSubmitted(true);
+			//if its a valid active promo code
 			promoId = filtered.id;
 			axios.post("/api/sendPromo", { cartId, promoId });
+		} else {
+			//if inactive or invalid
+			setIsSubmitted("invalid");
 		}
 	};
 
@@ -44,12 +47,20 @@ const Cart = ({
 		await verify(addressRaw, auth.id);
 	};
 
+	const changeQuantity = (lineItem, e) => {
+		const newLineItem = { ...lineItem, quantity: Number(e.target.value) };
+		const filteredLineItems = lineItems.filter(i => i.id !== newLineItem.id);
+		const updatedLineItems = [...filteredLineItems, newLineItem];
+		setLineItems(updatedLineItems);
+	};
+
 	return (
 		<div>
 			<h2>Cart - {cart.id && cart.id.slice(0, 4)}</h2>
 			<button
 				type="button"
-				className="btn btn-dark"
+				type="button"
+				className="btn btn-secondary"
 				disabled={!lineItems.find(lineItem => lineItem.orderId === cart.id)}
 				onClick={createOrder}
 			>
@@ -65,8 +76,20 @@ const Cart = ({
 						return (
 							<li key={lineItem.id}>
 								{product && product.name} <br />
-								<span className="quantity">Quantity: {lineItem.quantity}</span>
-								<button onClick={() => removeFromCart(lineItem.id)}>
+								{product.description} <br />${product.price} each
+								<div className="quantity">
+									<label htmlFor="name">Quantity: </label>
+									<input
+										type="text"
+										name="quantity"
+										defaultValue={lineItem.quantity}
+										onChange={e => changeQuantity(lineItem, e)}
+									/>
+								</div>
+								<button
+									className="btn btn-outline-danger"
+									onClick={() => removeFromCart(lineItem.id)}
+								>
 									Remove From Cart
 								</button>
 								item subtotal: $
@@ -78,20 +101,26 @@ const Cart = ({
 			<p>cart subtotal: ${subtotal}</p>
 			<form onSubmit={onPromoSubmit}>
 				<input placeholder="promo code" value={promo} onChange={onChange} />
-				<button>submit promo code</button>
+				<button type="button" className="btn btn-secondary">
+					submit promo code
+				</button>
 				{isSubmitted && (
 					<PromoDisplay
+						isSubmitted={isSubmitted}
+						cart={cart}
 						promoDescription={promoDescription}
-						multiplier={multiplier}
+						removePromo={removePromo}
 					/>
 				)}
 			</form>
-			<form onSubmit={e => handleAddress(e)}>
+			<form onSubmit={handleAddress}>
 				<input placeholder="Address" />
 				<input placeholder="City" />
 				<input placeholder="State" />
 				<input placeholder="Zip" />
-				<button>Use This Address</button>
+				<button type="button" className="btn btn-secondary">
+					Use This Address
+				</button>
 			</form>
 		</div>
 	);

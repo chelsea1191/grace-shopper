@@ -7,6 +7,13 @@ const models = ({ products, users, orders, lineItems } = require("./models"));
 const faker = require("faker");
 
 const {
+	changePromoStatus,
+	getAllUsers,
+	addNewPromo,
+	changeUserStatus
+} = require("./adminMethods");
+
+const {
 	getCart,
 	getOrders,
 	addToCart,
@@ -15,7 +22,8 @@ const {
 	createOrder,
 	getLineItems,
 	applyPromo,
-	getAllPromos
+	getAllPromos,
+	removePromo
 } = require("./userMethods");
 
 const getProducts = amount => {
@@ -25,7 +33,7 @@ const getProducts = amount => {
 		let price = faker.commerce.price(0.99, 20.0, 2);
 		let text = faker.lorem.sentence(5);
 		let rating = faker.random.number({ min: 55, max: 100 });
-		let img = faker.image.imageUrl(50, 50, "animals", true);
+		let img = faker.image.imageUrl(300, 300, "animals", true);
 		let newProd = {
 			name: prodName,
 			price: price,
@@ -52,7 +60,8 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       code VARCHAR(100) NOT NULL UNIQUE,
       description VARCHAR(300) NOT NULL,
-      multiplier DECIMAL NOT NULL
+      multiplier DECIMAL NOT NULL,
+      status VARCHAR
     );
 
     CREATE TABLE users(
@@ -60,6 +69,7 @@ const sync = async () => {
       username VARCHAR(100) NOT NULL UNIQUE,
       password VARCHAR(100) NOT NULL,
       role VARCHAR(20) DEFAULT 'USER',
+      status VARCHAR,
       CHECK (char_length(username) > 0)
     );
 
@@ -99,9 +109,9 @@ const sync = async () => {
       zip VARCHAR(100) NOT NULL
     );
 
-    INSERT INTO promos (code, description, multiplier) VALUES ('TENOFF', 'take 10% off any purchase', '0.9');
-    INSERT INTO promos (code, description, multiplier) VALUES ('SPRING20', 'take 20% off any purchase', '0.8');
-    INSERT INTO promos (code, description, multiplier) VALUES ('UNF40', 'take 40% off any purchase', '0.6');
+    INSERT INTO promos (code, description, multiplier, status) VALUES ('TENOFF', 'take 10% off any purchase', '0.9', 'active');
+    INSERT INTO promos (code, description, multiplier, status) VALUES ('SPRING20', 'take 20% off any purchase', '0.8', 'active');
+    INSERT INTO promos (code, description, multiplier, status) VALUES ('UNF40', 'take 40% off any purchase', '0.6', 'inactive');
   `;
 
 	await client.query(SQL);
@@ -110,17 +120,20 @@ const sync = async () => {
 		lucy: {
 			username: "lucy",
 			password: "LUCY",
-			role: "ADMIN"
+			role: "ADMIN",
+			status: "active"
 		},
 		moe: {
 			username: "moe",
 			password: "MOE",
-			role: null
+			role: null,
+			status: "active"
 		},
 		curly: {
 			username: "larry",
 			password: "LARRY",
-			role: null
+			role: null,
+			status: "active"
 		}
 	};
 
@@ -184,5 +197,9 @@ module.exports = {
 	getLineItems,
 	applyPromo,
 	getAllPromos,
-	addAddress
+	removePromo,
+	changePromoStatus,
+	getAllUsers,
+	addNewPromo,
+	changeUserStatus
 };

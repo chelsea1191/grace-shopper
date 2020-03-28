@@ -6,10 +6,11 @@ import Register from "./Register";
 import Orders from "./Orders";
 import Cart from "./Cart";
 import Products from "./Products";
+import AdminPromos from "./AdminPromos";
+import AdminUsers from "./AdminUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import CreateUser from "./CreateUser";
 
 const headers = () => {
 	const token = window.localStorage.getItem("token");
@@ -28,15 +29,22 @@ const App = () => {
 	const [products, setProducts] = useState([]);
 	const [promo, setPromo] = useState([]);
 	const [allPromos, setAllPromos] = useState([]);
-	const [subtotal, setSubtotal] = useState([]);
+	const [subtotal, setSubtotal] = useState("");
 	const [lineItems, setLineItems] = useState([]);
 	const [multiplier, setMultiplier] = useState(null);
 	const [promoDescription, setPromoDescription] = useState([]);
 	const [isSubmitted, setIsSubmitted] = useState(false);
+	const [users, setUsers] = useState([]);
 
 	useEffect(() => {
 		axios.get("/api/products").then(response => setProducts(response.data));
 	}, [auth]);
+
+	useEffect(() => {
+		axios.get("/api/getAllUsers").then(response => {
+			setUsers(response.data);
+		});
+	}, [auth, users]);
 
 	useEffect(() => {
 		if (auth.id) {
@@ -51,22 +59,20 @@ const App = () => {
 		axios.get("/api/getPromos").then(response => {
 			setAllPromos(response.data);
 		});
-	}, [auth]);
+	}, [auth, allPromos]);
 
 	useEffect(() => {
 		if (auth.id) {
 			axios.get("/api/getCart", headers()).then(response => {
 				setCart(response.data);
-				console.log("cart: ", response.data);
 				if (response.data.promo === null || response.data.promo === undefined) {
-					console.log("promo is null");
 				} else {
-					console.log("promo is: ", response.data.promo);
 					let filtered = allPromos.filter(
 						each => each.id === response.data.promo
 					);
 					setMultiplier(filtered[0].multiplier);
 					setPromoDescription(filtered[0].description);
+					setIsSubmitted(true);
 				}
 			});
 		}
@@ -98,7 +104,9 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		exchangeTokenForAuth();
+		window.addEventListener("hashchange", () => {
+			setParams(qs.parse(window.location.hash.slice(1)));
+		});
 	}, []);
 
 	useEffect(() => {
@@ -109,7 +117,7 @@ const App = () => {
 
 	useEffect(() => {
 		getSubtotal();
-	}, [cart, multiplier]);
+	}, [cart, multiplier, auth, lineItems]);
 
 	const createOrder = () => {
 		const token = window.localStorage.getItem("token");
@@ -124,6 +132,8 @@ const App = () => {
 				setCart(response.data);
 			});
 		setMultiplier(null);
+		setPromoDescription("");
+		setSubtotal(0);
 	};
 
 	const addToCart = productId => {
@@ -139,22 +149,12 @@ const App = () => {
 				setLineItems(updated);
 			}
 		});
-		getSubtotal();
 	};
 
 	const removeFromCart = lineItemId => {
 		axios.delete(`/api/removeFromCart/${lineItemId}`, headers()).then(() => {
 			setLineItems(lineItems.filter(_lineItem => _lineItem.id !== lineItemId));
 		});
-		getSubtotal();
-	};
-
-	const totalItemsInCart = () => {
-		const quantityArray = lineItems.map(item => item.quantity);
-		return quantityArray.reduce(
-			(accumulator, currentValue) => accumulator + currentValue,
-			0
-		);
 	};
 
 	const getSubtotal = () => {
@@ -173,6 +173,32 @@ const App = () => {
 					setSubtotal(multiplier * (product.price * lineItem.quantity));
 				}
 			});
+	};
+
+	const getSubtotal = () => {
+		let runningTotal = 0;
+		//gets subtotal of entire cart-- did not take tax into consideration yet
+		lineItems
+			.filter(lineItem => lineItem.orderId === cart.id)
+			.map(lineItem => {
+				let product = products.find(
+					product => product.id === lineItem.productId
+				);
+				if (multiplier == null || multiplier == undefined) {
+					runningTotal += product.price * lineItem.quantity;
+				} else {
+					runningTotal += multiplier * (product.price * lineItem.quantity);
+				}
+			});
+		setSubtotal(runningTotal.toFixed(2));
+	};
+
+	const removePromo = cartId => {
+		axios.post("/api/removePromo", { cartId }).then(response => {
+			setMultiplier(null);
+			setPromoDescription([]);
+			setIsSubmitted(false);
+		});
 	};
 
 	const { view } = params;
@@ -199,7 +225,7 @@ const App = () => {
 							<Login login={login} />
 						</Route>
 						<Route path="/register">
-							<CreateUser />
+							<Register />
 						</Route>
 					</Switch>
 				</div>
@@ -228,16 +254,27 @@ const App = () => {
 						</li>
 						<li className="nav-link">
 							<Link className="link" to="/orders">
-								Orders
-							</Link>
-						</li>
-						<li className="nav-link active">
-							<Link className="link" to="/register">
-								Register
+								My Orders
 							</Link>
 						</li>
 						<li className="nav-link">
-							<button onClick={logout}>Logout {auth.username} </button>
+							<Link className="link" to="/adminpromos">
+								Edit Promos (admin)
+							</Link>
+						</li>
+						<li className="nav-link">
+							<Link className="link" to="/adminusers">
+								Edit Users (admin)
+							</Link>
+						</li>
+						<li className="nav-link">
+							<button
+								type="button"
+								className="btn btn-secondary"
+								onClick={logout}
+							>
+								Logout {auth.username}{" "}
+							</button>
 						</li>
 					</nav>
 					<Switch>
@@ -248,10 +285,15 @@ const App = () => {
 								orders={orders}
 							/>
 						</Route>
+						<Route path="/adminpromos">
+							<AdminPromos allPromos={allPromos} />
+						</Route>
+						<Route path="/adminusers">
+							<AdminUsers users={users} />
+						</Route>
 						<Route path="/cart">
 							<Cart
 								promo={promo}
-								multiplier={multiplier}
 								promoDescription={promoDescription}
 								allPromos={allPromos}
 								setPromo={setPromo}
@@ -261,12 +303,12 @@ const App = () => {
 								cart={cart}
 								createOrder={createOrder}
 								setIsSubmitted={setIsSubmitted}
+								isSubmitted={isSubmitted}
 								products={products}
-								auth={auth}
-							/>{" "}
-						</Route>
-						<Route path="/register">
-							<CreateUser />
+								lineItems={lineItems}
+								setLineItems={setLineItems}
+								removePromo={removePromo}
+							/>
 						</Route>
 						<Route path="/">
 							<Products addToCart={addToCart} products={products} />
