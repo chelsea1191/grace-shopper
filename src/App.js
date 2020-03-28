@@ -124,11 +124,9 @@ const App = () => {
 	}, []);
 
 	useEffect(() => {
-		window.addEventListener("hashchange", () => {
-			setParams(qs.parse(window.location.hash.slice(1)));
-		});
+		exchangeTokenForAuth();
 	}, []);
-
+	
 	useEffect(() => {
 		getSubtotal();
 	}, [cart, multiplier, auth, lineItems]);
