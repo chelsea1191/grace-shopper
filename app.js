@@ -69,9 +69,9 @@ app.get("/api/getOrders", (req, res, next) => {
 });
 
 app.get("/api/getPromos", (req, res, next) => {
-  db.getAllPromos()
-    .then(promos => res.send(promos))
-    .catch(next);
+	db.getAllPromos()
+		.then(promos => res.send(promos))
+		.catch(next);
 });
 
 app.post("/api/createOrder", (req, res, next) => {
@@ -95,9 +95,9 @@ app.post("/api/getPromo", (req, res, next) => {
 });
 
 app.post("/api/sendPromo", (req, res, next) => {
-  db.applyPromo(req.body.cartId, req.body.promoId)
-    .then(response => res.send(response))
-    .catch(next);
+	db.applyPromo(req.body.cartId, req.body.promoId)
+		.then(response => res.send(response))
+		.catch(next);
 });
 
 app.post("/api/addToCart", (req, res, next) => {
@@ -134,6 +134,21 @@ Object.keys(models).forEach(key => {
 	});
 });
 
+app.post("/api/address", (req, res, next) => {
+	console.log(req.body);
+	db.addAddress(req.body)
+		.then(address => res.send(address))
+		.catch(next);
+});
+
+app.post("/api/users", (req, res, next) => {
+	console.log(req.body);
+	db.users
+		.create(req.body)
+		.then(user => res.send(user))
+		.catch(next);
+});
+
 app.get("/*", (req, res, next) =>
 	res.sendFile(path.join(__dirname, "index.html"))
 );
@@ -144,12 +159,6 @@ app.use((req, res, next) => {
 		status: 404
 	};
 	next(error);
-});
-
-app.post("/api/address", (req, res, next) => {
-	db.addAddress(req.body)
-		.then(address => res.send(address))
-		.catch(next);
 });
 
 app.use((err, req, res, next) => {
