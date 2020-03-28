@@ -6,6 +6,8 @@ import Register from './Register';
 import Orders from './Orders';
 import Cart from './Cart';
 import Products from './Products';
+import AdminPromos from './AdminPromos';
+import AdminUsers from './AdminUsers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
@@ -27,15 +29,22 @@ const App = () => {
   const [products, setProducts] = useState([]);
   const [promo, setPromo] = useState([]);
   const [allPromos, setAllPromos] = useState([]);
-  const [subtotal, setSubtotal] = useState([]);
+  const [subtotal, setSubtotal] = useState('');
   const [lineItems, setLineItems] = useState([]);
   const [multiplier, setMultiplier] = useState(null);
   const [promoDescription, setPromoDescription] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     axios.get('/api/products').then(response => setProducts(response.data));
   }, [auth]);
+
+  useEffect(() => {
+    axios.get('/api/getAllUsers').then(response => {
+      setUsers(response.data);
+    });
+  }, [auth, users]);
 
   useEffect(() => {
     if (auth.id) {
@@ -50,24 +59,20 @@ const App = () => {
     axios.get('/api/getPromos').then(response => {
       setAllPromos(response.data);
     });
-  }, [auth]);
+  }, [auth, allPromos]);
 
   useEffect(() => {
     if (auth.id) {
       axios.get('/api/getCart', headers()).then(response => {
         setCart(response.data);
-
-        console.log("this user's cart: ", response.data);
-
         if (response.data.promo === null || response.data.promo === undefined) {
-          console.log('promo is null');
         } else {
-          console.log('promo is: ', response.data.promo);
           let filtered = allPromos.filter(
             each => each.id === response.data.promo
           );
           setMultiplier(filtered[0].multiplier);
           setPromoDescription(filtered[0].description);
+          setIsSubmitted(true);
         }
       });
     }
@@ -118,7 +123,7 @@ const App = () => {
 
   useEffect(() => {
     getSubtotal();
-  }, [cart, multiplier]);
+  }, [cart, multiplier, auth, lineItems]);
 
   const createOrder = () => {
     const token = window.localStorage.getItem('token');
@@ -150,14 +155,12 @@ const App = () => {
         setLineItems(updated);
       }
     });
-    getSubtotal();
   };
 
   const removeFromCart = lineItemId => {
     axios.delete(`/api/removeFromCart/${lineItemId}`, headers()).then(() => {
       setLineItems(lineItems.filter(_lineItem => _lineItem.id !== lineItemId));
     });
-    getSubtotal();
   };
 
   const updateCart = () => {
@@ -193,6 +196,7 @@ const App = () => {
   };
 
   const getSubtotal = () => {
+    let runningTotal = 0;
     //gets subtotal of entire cart-- did not take tax into consideration yet
     lineItems
       .filter(lineItem => lineItem.orderId === cart.id)
@@ -201,13 +205,20 @@ const App = () => {
           product => product.id === lineItem.productId
         );
         if (multiplier == null || multiplier == undefined) {
-          console.log('multiplier is null');
-          setSubtotal(product.price * lineItem.quantity);
+          runningTotal += product.price * lineItem.quantity;
         } else {
-          console.log('multiplier is: ', multiplier);
-          setSubtotal(multiplier * (product.price * lineItem.quantity));
+          runningTotal += multiplier * (product.price * lineItem.quantity);
         }
       });
+    setSubtotal(runningTotal.toFixed(2));
+  };
+
+  const removePromo = cartId => {
+    axios.post('/api/removePromo', { cartId }).then(response => {
+      setMultiplier(null);
+      setPromoDescription([]);
+      setIsSubmitted(false);
+    });
   };
 
   const { view } = params;
@@ -269,6 +280,16 @@ const App = () => {
               </Link>
             </li>
             <li className="nav-link">
+              <Link className="link" to="/adminpromos">
+                Edit Promos (admin)
+              </Link>
+            </li>
+            <li className="nav-link">
+              <Link className="link" to="/adminusers">
+                Edit Users (admin)
+              </Link>
+            </li>
+            <li className="nav-link">
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -286,10 +307,15 @@ const App = () => {
                 orders={orders}
               />
             </Route>
+            <Route path="/adminpromos">
+              <AdminPromos allPromos={allPromos} />
+            </Route>
+            <Route path="/adminusers">
+              <AdminUsers users={users} />
+            </Route>
             <Route path="/cart">
               <Cart
                 promo={promo}
-                multiplier={multiplier}
                 promoDescription={promoDescription}
                 allPromos={allPromos}
                 setPromo={setPromo}
@@ -304,6 +330,7 @@ const App = () => {
                 lineItems={lineItems}
                 setLineItems={setLineItems}
                 updateCart={updateCart}
+                removePromo={removePromo}
               />
             </Route>
             <Route path="/">

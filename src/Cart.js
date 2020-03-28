@@ -5,7 +5,6 @@ import verify from './verify';
 
 const Cart = ({
   promo,
-  multiplier,
   promoDescription,
   setPromo,
   allPromos,
@@ -19,6 +18,7 @@ const Cart = ({
   products,
   setLineItems,
   updateCart,
+  removePromo,
 }) => {
   let cartId = cart.id;
   let promoId;
@@ -30,12 +30,15 @@ const Cart = ({
 
   const onPromoSubmit = ev => {
     ev.preventDefault();
-    setIsSubmitted(true);
-
     const filtered = allPromos.filter(each => each.code === promo)[0];
-    if (filtered) {
+    if (filtered.status === 'active') {
+      setIsSubmitted(true);
+      //if its a valid active promo code
       promoId = filtered.id;
       axios.post('/api/sendPromo', { cartId, promoId });
+    } else {
+      //if inactive or invalid
+      setIsSubmitted('invalid');
     }
   };
 
@@ -96,7 +99,7 @@ const Cart = ({
             return (
               <li key={lineItem.id}>
                 {product && product.name} <br />
-                {product.description}
+                {product.description} <br />${product.price} each
                 <div className="quantity">
                   <label htmlFor="name">Quantity: </label>
                   <span className="input-group-btn">
@@ -147,10 +150,10 @@ const Cart = ({
         </button>
         {isSubmitted && (
           <PromoDisplay
-            promo={promo}
-            allPromos={allPromos}
+            isSubmitted={isSubmitted}
+            cart={cart}
             promoDescription={promoDescription}
-            multiplier={multiplier}
+            removePromo={removePromo}
           />
         )}
       </form>

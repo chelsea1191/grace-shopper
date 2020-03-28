@@ -118,6 +118,13 @@ const updateLineItems = async (lineItemId, lineItemQuantity) => {
   return results.rows[0];
 };
 
+const removePromo = async cartId => {
+  await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
+    cartId,
+    null,
+  ]);
+};
+
 module.exports = {
   getCart,
   getOrders,
@@ -129,4 +136,5 @@ module.exports = {
   applyPromo,
   getAllPromos,
   updateLineItems,
+  removePromo,
 };

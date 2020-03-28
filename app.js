@@ -56,6 +56,18 @@ app.get('/api/auth', isLoggedIn, (req, res, next) => {
   res.send(req.user);
 });
 
+app.get('/api/getAllUsers', (req, res, next) => {
+  db.getAllUsers()
+    .then(users => res.send(users))
+    .catch(next);
+}); /////////////
+
+app.post('/api/changeUserStatus', (req, res, next) => {
+  db.changeUserStatus(req.body.userId, req.body.selection)
+    .then(response => res.send(response))
+    .catch(next);
+});
+
 app.get('/api/getCart', (req, res, next) => {
   db.getCart(req.user.id)
     .then(cart => res.send(cart))
@@ -100,16 +112,32 @@ app.put('/api/updateCart/:id', (req, res, next) => {
     req.body.id,
     req.body.quantity
   );
-  db.updateLineItems(req.body.id, req.body.quantity)
-    .then(response => {
-      res.status(200).send(response);
-    })
-    .catch(next);
+  db.updateLineItems(req.body.id, req.body.quantity).then(response => {
+    res.status(200).send(response);
+  });
 });
 
 app.post('/api/sendPromo', (req, res, next) => {
   db.applyPromo(req.body.cartId, req.body.promoId)
     .then(response => res.send(response))
+    .catch(next);
+});
+
+app.post('/api/removePromo', (req, res, next) => {
+  db.removePromo(req.body.cartId)
+    .then(response => res.send(response))
+    .catch(next);
+});
+
+app.post('/api/addPromo', (req, res, next) => {
+  db.addNewPromo(
+    req.body.codeInput,
+    req.body.descriptionInput,
+    req.body.multiplierInput
+  )
+    .then(response => {
+      res.sendStatus(204);
+    })
     .catch(next);
 });
 
@@ -129,6 +157,12 @@ app.get('/api/products', (req, res, next) => {
   db.models.products
     .read()
     .then(products => res.send(products))
+    .catch(next);
+});
+
+app.post('/api/changePromoStatus', (req, res, next) => {
+  db.changePromoStatus(req.body.promoId, req.body.selection)
+    .then(response => res.send(response))
     .catch(next);
 });
 

@@ -2,3 +2,5 @@
 - create database university_grace_shopper
 - npm run start:dev
 - login with seeded users
+  -username: moe, password: MOE (USER)
+  -username: lucy, password: LUCY (ADMIN)git all
