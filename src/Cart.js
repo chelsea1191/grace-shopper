@@ -20,13 +20,13 @@ const Cart = ({
   updateCart,
   removePromo,
 }) => {
-  let cartId = cart.id;
-  let promoId;
+	let cartId = cart.id;
+	let promoId;
 
-  const onChange = ev => {
-    let uppercaseInput = ev.target.value.toUpperCase();
-    setPromo(uppercaseInput);
-  };
+	const onChange = ev => {
+		let uppercaseInput = ev.target.value.toUpperCase();
+		setPromo(uppercaseInput);
+	};
 
   const onPromoSubmit = ev => {
     ev.preventDefault();
@@ -42,13 +42,11 @@ const Cart = ({
     }
   };
 
-  const handleAddress = async e => {
-    let address = await verify(e).catch(err => console.log(err));
-    console.log(address);
-    // await axios
-    // 	.post("/api/address", { address, user })
-    // 	.then(response => console.log(response));
-  };
+	const handleAddress = async e => {
+		e.preventDefault();
+		let addressRaw = e.target;
+		await verify(addressRaw, auth.id);
+	};
 
   const changeQuantity = (lineItem, e) => {
     const newQuantity = Number(e.target.value);
