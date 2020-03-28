@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PromoDisplay from './PromoDisplay.js';
 import verify from './verify';
-
 
 const Cart = ({
   promo,
@@ -18,9 +16,9 @@ const Cart = ({
   removeFromCart,
   setIsSubmitted,
   isSubmitted,
-  products, 
-  setLineItems
-
+  products,
+  setLineItems,
+  updateCart,
 }) => {
   let cartId = cart.id;
   let promoId;
@@ -50,10 +48,30 @@ const Cart = ({
   };
 
   const changeQuantity = (lineItem, e) => {
-    const newLineItem = { ...lineItem, quantity: Number(e.target.value) };
-    const filteredLineItems = lineItems.filter(i => i.id !== newLineItem.id);
-    const updatedLineItems = [...filteredLineItems, newLineItem];
-    setLineItems(updatedLineItems);
+    const newQuantity = Number(e.target.value);
+    setNewQuantity(lineItem, newQuantity);
+  };
+
+  const setNewQuantity = async (lineItem, num) => {
+    if (num === 0) {
+      removeFromCart(lineItem.id);
+    } else {
+      const newLineItem = { ...lineItem, quantity: num };
+      const filteredLineItems = lineItems.filter(i => i.id !== newLineItem.id);
+      const updatedLineItems = [...filteredLineItems, newLineItem];
+      await axios
+        .put(`/api/updateCart/${newLineItem.id}`, newLineItem)
+        .then(setLineItems(updatedLineItems));
+    }
+  };
+
+  const incrementQuantity = lineItem => {
+    const plusQuantity = lineItem.quantity + 1;
+    setNewQuantity(lineItem, plusQuantity);
+  };
+  const decrementQuantity = lineItem => {
+    const minusQuantity = lineItem.quantity - 1;
+    setNewQuantity(lineItem, minusQuantity);
   };
 
   return (
@@ -62,7 +80,7 @@ const Cart = ({
       <button
         type="button"
         type="button"
-        class="btn btn-secondary"
+        className="btn btn-secondary"
         disabled={!lineItems.find(lineItem => lineItem.orderId === cart.id)}
         onClick={createOrder}
       >
@@ -81,19 +99,40 @@ const Cart = ({
                 {product.description}
                 <div className="quantity">
                   <label htmlFor="name">Quantity: </label>
+                  <span className="input-group-btn">
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-number"
+                      onClick={() => decrementQuantity(lineItem)}
+                    >
+                      -
+                    </button>
+                  </span>
                   <input
+                    id="quantity-field"
                     type="text"
                     name="quantity"
                     defaultValue={lineItem.quantity}
                     onChange={e => changeQuantity(lineItem, e)}
                   />
+                  <span className="input-group-btn">
+                    <button
+                      type="button"
+                      className="btn btn-success btn-number"
+                      onClick={() => incrementQuantity(lineItem)}
+                    >
+                      +
+                    </button>
+                  </span>
                 </div>
-                <button
-                  className="btn btn-outline-danger"
-                  onClick={() => removeFromCart(lineItem.id)}
-                >
-                  Remove From Cart
-                </button>
+                <div>
+                  <button
+                    className="btn btn-outline-danger"
+                    onClick={() => removeFromCart(lineItem.id)}
+                  >
+                    Remove From Cart
+                  </button>
+                </div>
                 item subtotal: $
                 {Number(lineItem.quantity * product.price).toFixed(2)}
               </li>
@@ -103,7 +142,7 @@ const Cart = ({
       <p>cart subtotal: ${subtotal}</p>
       <form onSubmit={onPromoSubmit}>
         <input placeholder="promo code" value={promo} onChange={onChange} />
-        <button type="button" class="btn btn-secondary">
+        <button type="button" className="btn btn-secondary">
           submit promo code
         </button>
         {isSubmitted && (
@@ -120,7 +159,7 @@ const Cart = ({
         <input placeholder="City" />
         <input placeholder="State" />
         <input placeholder="Zip" />
-        <button type="button" class="btn btn-secondary">
+        <button type="button" className="btn btn-secondary">
           Use This Address
         </button>
       </form>

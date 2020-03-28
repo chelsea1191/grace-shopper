@@ -1,10 +1,10 @@
-const client = require("./client");
+const client = require('./client');
 
-const { authenticate, compare, findUserFromToken, hash } = require("./auth");
+const { authenticate, compare, findUserFromToken, hash } = require('./auth');
 
-const models = ({ products, users, orders, lineItems } = require("./models"));
+const models = ({ products, users, orders, lineItems } = require('./models'));
 
-const faker = require("faker");
+const faker = require('faker');
 
 const {
   getCart,
@@ -15,8 +15,9 @@ const {
   createOrder,
   getLineItems,
   applyPromo,
-  getAllPromos
-} = require("./userMethods");
+  getAllPromos,
+  updateLineItems,
+} = require('./userMethods');
 
 const getProducts = amount => {
   let products = [];
@@ -25,13 +26,13 @@ const getProducts = amount => {
     let price = faker.commerce.price(0.99, 20.0, 2);
     let text = faker.lorem.sentence(5);
     let rating = faker.random.number({ min: 55, max: 100 });
-    let img = faker.image.imageUrl(300, 300, "animals", true);
+    let img = faker.image.imageUrl(300, 300, 'animals', true);
     let newProd = {
       name: prodName,
       price: price,
       description: text,
       rating: rating,
-      image: img
+      image: img,
     };
     products.push(newProd);
   }
@@ -108,20 +109,20 @@ const sync = async () => {
 
   const _users = {
     lucy: {
-      username: "lucy",
-      password: "LUCY",
-      role: "ADMIN"
+      username: 'lucy',
+      password: 'LUCY',
+      role: 'ADMIN',
     },
     moe: {
-      username: "moe",
-      password: "MOE",
-      role: null
+      username: 'moe',
+      password: 'MOE',
+      role: null,
     },
     curly: {
-      username: "larry",
-      password: "LARRY",
-      role: null
-    }
+      username: 'larry',
+      password: 'LARRY',
+      role: null,
+    },
   };
 
   const _products = getProducts(25);
@@ -135,11 +136,11 @@ const sync = async () => {
 
   const _orders = {
     moe: {
-      userId: moe.id
+      userId: moe.id,
     },
     lucy: {
-      userId: lucy.id
-    }
+      userId: lucy.id,
+    },
   };
 
   const userMap = (await users.read()).reduce((acc, user) => {
@@ -152,20 +153,20 @@ const sync = async () => {
   }, {});
   return {
     users: userMap,
-    products: productMap
+    products: productMap,
   };
 };
 
 const addAddress = async (address, user) => {
   const SQL =
-    "INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *";
+    'INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *';
   return (
     await client.query(SQL, [
       user.id,
       address.address,
       address.city,
       address.state,
-      address.zip
+      address.zip,
     ])
   ).rows[0];
 };
@@ -182,5 +183,6 @@ module.exports = {
   createOrder,
   getLineItems,
   applyPromo,
-  getAllPromos
+  getAllPromos,
+  updateLineItems,
 };

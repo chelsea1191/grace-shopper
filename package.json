@@ -29,6 +29,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.9",
     "bcrypt": "^4.0.1",
+    "bootstrap": "^4.4.1",
     "express": "^4.17.1",
     "faker": "^4.1.0",
     "jwt-simple": "^0.5.6",

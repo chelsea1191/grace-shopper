@@ -1,5 +1,5 @@
-import React from "react";
-import Rating from "./Rating";
+import React from 'react';
+import Rating from './Rating';
 
 const Products = ({ products, addToCart }) => {
   return (
@@ -10,15 +10,15 @@ const Products = ({ products, addToCart }) => {
           return (
             <div className="card" key={product.id}>
               <img className="card-img-top" src={product.image}></img>
-              <div class="card-body">
+              <div className="card-body">
                 <h5 className="card-title">{product.name}</h5>
                 <span className="card-text">
                   Description: {product.description}
-                </span>{" "}
+                </span>{' '}
                 <br />
                 <span className="card-text">
                   User Rating: {product.rating}
-                </span>{" "}
+                </span>{' '}
                 <br />
                 <span className="card-price">
                   ${Number(product.price).toFixed(2)}
