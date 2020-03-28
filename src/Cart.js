@@ -42,11 +42,9 @@ const Cart = ({
   };
 
   const handleAddress = async e => {
-    let address = await verify(e).catch(err => console.log(err));
-    console.log(address);
-    // await axios
-    // 	.post("/api/address", { address, user })
-    // 	.then(response => console.log(response));
+    e.preventDefault();
+    let addressRaw = e.target;
+    await verify(addressRaw, auth.id);
   };
 
   const changeQuantity = (lineItem, e) => {

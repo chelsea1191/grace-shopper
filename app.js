@@ -86,13 +86,13 @@ app.get('/api/getPromos', (req, res, next) => {
     .catch(next);
 });
 
-app.post("/api/rateItem", (req, res, next) => {
+app.post('/api/rateItem', (req, res, next) => {
   db.rateItem(req.body.rating, req.body.itemId, req.body.orderId)
     .then(response => res.send(response))
     .catch(next);
 });
 
-app.post("/api/createOrder", (req, res, next) => {
+app.post('/api/createOrder', (req, res, next) => {
   db.createOrder(req.user.id, req.body)
     .then(order => res.send(order))
     .catch(next);
@@ -113,11 +113,6 @@ app.post('/api/getPromo', (req, res, next) => {
 });
 
 app.put('/api/updateCart/:id', (req, res, next) => {
-  console.log(
-    'app.put is being called and passed',
-    req.body.id,
-    req.body.quantity
-  );
   db.updateLineItems(req.body.id, req.body.quantity).then(response => {
     res.status(200).send(response);
   });
@@ -142,7 +137,7 @@ app.post('/api/addPromo', (req, res, next) => {
     req.body.multiplierInput
   )
     .then(response => {
-      res.sendStatus(204);
+      res.send(response);
     })
     .catch(next);
 });
@@ -187,6 +182,19 @@ Object.keys(models).forEach(key => {
   });
 });
 
+app.post('/api/address', (req, res, next) => {
+  db.addAddress(req.body)
+    .then(address => res.send(address))
+    .catch(next);
+});
+
+app.post('/api/users', (req, res, next) => {
+  db.users
+    .create(req.body)
+    .then(user => res.send(user))
+    .catch(next);
+});
+
 app.get('/*', (req, res, next) =>
   res.sendFile(path.join(__dirname, 'index.html'))
 );
@@ -194,7 +202,7 @@ app.get('/*', (req, res, next) =>
 app.use((req, res, next) => {
   const error = {
     message: `page not found ${req.url} for ${req.method}`,
-    status: 404,
+    status: 404
   };
   next(error);
 });
