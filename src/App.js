@@ -35,6 +35,7 @@ const App = () => {
   const [promoDescription, setPromoDescription] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [users, setUsers] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     axios.get("/api/products").then(response => setProducts(response.data));
@@ -95,12 +96,17 @@ const App = () => {
   const exchangeTokenForAuth = async () => {
     const response = await axios.get("/api/auth", headers());
     setAuth(response.data);
+    if (response.data.role === "ADMIN") {
+      console.log("user is admin");
+      setIsAdmin(true);
+    }
   };
 
   const logout = () => {
     window.location.hash = "#";
     window.localStorage.removeItem("token");
     setAuth({});
+    setIsAdmin(false);
   };
 
   useEffect(() => {
@@ -245,16 +251,20 @@ const App = () => {
                 My Orders
               </Link>
             </li>
-            <li className="nav-link">
-              <Link className="link" to="/adminpromos">
-                Edit Promos (admin)
-              </Link>
-            </li>
-            <li className="nav-link">
-              <Link className="link" to="/adminusers">
-                Edit Users (admin)
-              </Link>
-            </li>
+            {isAdmin === true && (
+              <li className="nav-link">
+                <Link className="link" to="/adminpromos">
+                  Edit Promos
+                </Link>
+              </li>
+            )}
+            {isAdmin === true && (
+              <li className="nav-link">
+                <Link className="link" to="/adminusers">
+                  Edit Users
+                </Link>
+              </li>
+            )}
             <li className="nav-link">
               <button
                 type="button"
@@ -271,11 +281,14 @@ const App = () => {
                 lineItems={lineItems}
                 products={products}
                 orders={orders}
+                setLineItems={setLineItems}
               />
             </Route>
+
             <Route path="/adminpromos">
               <AdminPromos allPromos={allPromos} />
             </Route>
+
             <Route path="/adminusers">
               <AdminUsers users={users} />
             </Route>
