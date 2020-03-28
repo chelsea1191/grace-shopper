@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
-import qs from "qs";
-import axios from "axios";
-import Login from "./Login";
-import Register from "./Register";
-import Orders from "./Orders";
-import Cart from "./Cart";
-import Products from "./Products";
-import AdminPromos from "./AdminPromos";
-import AdminUsers from "./AdminUsers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import qs from 'qs';
+import axios from 'axios';
+import Login from './Login';
+import Register from './Register';
+import Orders from './Orders';
+import Cart from './Cart';
+import Products from './Products';
+import AdminPromos from './AdminPromos';
+import AdminUsers from './AdminUsers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 const headers = () => {
-  const token = window.localStorage.getItem("token");
+  const token = window.localStorage.getItem('token');
   return {
     headers: {
-      authorization: token
-    }
+      authorization: token,
+    },
   };
 };
 
@@ -29,7 +29,7 @@ const App = () => {
   const [products, setProducts] = useState([]);
   const [promo, setPromo] = useState([]);
   const [allPromos, setAllPromos] = useState([]);
-  const [subtotal, setSubtotal] = useState("");
+  const [subtotal, setSubtotal] = useState('');
   const [lineItems, setLineItems] = useState([]);
   const [multiplier, setMultiplier] = useState(null);
   const [promoDescription, setPromoDescription] = useState([]);
@@ -38,33 +38,33 @@ const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    axios.get("/api/products").then(response => setProducts(response.data));
+    axios.get('/api/products').then(response => setProducts(response.data));
   }, [auth]);
 
   useEffect(() => {
-    axios.get("/api/getAllUsers").then(response => {
+    axios.get('/api/getAllUsers').then(response => {
       setUsers(response.data);
     });
   }, [auth, users]);
 
   useEffect(() => {
     if (auth.id) {
-      const token = window.localStorage.getItem("token");
-      axios.get("/api/getLineItems", headers()).then(response => {
+      const token = window.localStorage.getItem('token');
+      axios.get('/api/getLineItems', headers()).then(response => {
         setLineItems(response.data);
       });
     }
   }, [auth]);
 
   useEffect(() => {
-    axios.get("/api/getPromos").then(response => {
+    axios.get('/api/getPromos').then(response => {
       setAllPromos(response.data);
     });
   }, [auth, allPromos]);
 
   useEffect(() => {
     if (auth.id) {
-      axios.get("/api/getCart", headers()).then(response => {
+      axios.get('/api/getCart', headers()).then(response => {
         setCart(response.data);
         if (response.data.promo === null || response.data.promo === undefined) {
         } else {
@@ -81,20 +81,28 @@ const App = () => {
 
   useEffect(() => {
     if (auth.id) {
-      axios.get("/api/getOrders", headers()).then(response => {
+      axios.get('/api/getOrders', headers()).then(response => {
         setOrders(response.data);
       });
     }
   }, [auth]);
 
+  // useEffect(() => {
+  //   console.log('use effect is being called when line items changed');
+  //   if (auth.id) {
+  //     // const token = window.localStorage.getItem('token');
+  //     updateCart();
+  //   }
+  // }, [lineItems]);
+
   const login = async credentials => {
-    const token = (await axios.post("/api/auth", credentials)).data.token;
-    window.localStorage.setItem("token", token);
+    const token = (await axios.post('/api/auth', credentials)).data.token;
+    window.localStorage.setItem('token', token);
     exchangeTokenForAuth();
   };
 
   const exchangeTokenForAuth = async () => {
-    const response = await axios.get("/api/auth", headers());
+    const response = await axios.get('/api/auth', headers());
     setAuth(response.data);
     if (response.data.role === "ADMIN") {
       console.log("user is admin");
@@ -103,8 +111,8 @@ const App = () => {
   };
 
   const logout = () => {
-    window.location.hash = "#";
-    window.localStorage.removeItem("token");
+    window.location.hash = '#';
+    window.localStorage.removeItem('token');
     setAuth({});
     setIsAdmin(false);
   };
@@ -114,7 +122,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("hashchange", () => {
+    window.addEventListener('hashchange', () => {
       setParams(qs.parse(window.location.hash.slice(1)));
     });
   }, []);
@@ -124,24 +132,24 @@ const App = () => {
   }, [cart, multiplier, auth, lineItems]);
 
   const createOrder = () => {
-    const token = window.localStorage.getItem("token");
+    const token = window.localStorage.getItem('token');
     axios
-      .post("/api/createOrder", { subtotal }, headers())
+      .post('/api/createOrder', { subtotal }, headers())
       .then(response => {
         setOrders([response.data, ...orders]);
-        const token = window.localStorage.getItem("token");
-        return axios.get("/api/getCart", headers());
+        const token = window.localStorage.getItem('token');
+        return axios.get('/api/getCart', headers());
       })
       .then(response => {
         setCart(response.data);
       });
     setMultiplier(null);
-    setPromoDescription("");
+    setPromoDescription('');
     setSubtotal(0);
   };
 
   const addToCart = productId => {
-    axios.post("/api/addToCart", { productId }, headers()).then(response => {
+    axios.post('/api/addToCart', { productId }, headers()).then(response => {
       const lineItem = response.data;
       const found = lineItems.find(_lineItem => _lineItem.id === lineItem.id);
       if (!found) {
@@ -160,6 +168,30 @@ const App = () => {
       setLineItems(lineItems.filter(_lineItem => _lineItem.id !== lineItemId));
     });
   };
+
+  const updateCart = () => {
+    console.log('this is my updateCart function');
+    // this function is called as part of use effect when teh line item
+    // state is updated....
+    // what i want to do is
+    // pass in the line item that was changed (how to get?)
+    // filter through the line item array in state
+    // if the id matches, that is the one that we need to update -
+    // so send that whole line item object (which has new quantity)
+    // over the wire as a put request which will replace that
+    //line item object wth the updated one
+
+    // const updatedLineItem=
+    // axios.put('/api/updateCart', updatedLineItem)
+  };
+
+  // const changeMood = async (e, selectedDay) => {
+  //   const selectedMood = e.target[0].value;
+  //   let updatedDay = { ...selectedDay, mood: selectedMood };
+  //   await axios
+  //     .put(`/api/daily-moods/${updatedDay.id}`, updatedDay)
+  //     .then(updateMoodState(updatedDay));
+  // };
 
   const totalItemsInCart = () => {
     const quantityArray = lineItems.map(item => item.quantity);
@@ -188,7 +220,7 @@ const App = () => {
   };
 
   const removePromo = cartId => {
-    axios.post("/api/removePromo", { cartId }).then(response => {
+    axios.post('/api/removePromo', { cartId }).then(response => {
       setMultiplier(null);
       setPromoDescription([]);
       setIsSubmitted(false);
@@ -196,6 +228,8 @@ const App = () => {
   };
 
   const { view } = params;
+
+  console.log(lineItems);
 
   if (!auth.id) {
     return (
@@ -271,7 +305,7 @@ const App = () => {
                 className="btn btn-secondary"
                 onClick={logout}
               >
-                Logout {auth.username}{" "}
+                Logout {auth.username}{' '}
               </button>
             </li>
           </nav>
@@ -308,6 +342,7 @@ const App = () => {
                 products={products}
                 lineItems={lineItems}
                 setLineItems={setLineItems}
+                updateCart={updateCart}
                 removePromo={removePromo}
               />
             </Route>
