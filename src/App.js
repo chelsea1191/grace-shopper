@@ -16,8 +16,8 @@ const headers = () => {
   const token = window.localStorage.getItem('token');
   return {
     headers: {
-      authorization: token
-    }
+      authorization: token,
+    },
   };
 };
 
@@ -88,14 +88,6 @@ const App = () => {
       });
     }
   }, [auth]);
-
-  // useEffect(() => {
-  //   console.log('use effect is being called when line items changed');
-  //   if (auth.id) {
-  //     // const token = window.localStorage.getItem('token');
-  //     updateCart();
-  //   }
-  // }, [lineItems]);
 
   const login = async credentials => {
     const token = (await axios.post('/api/auth', credentials)).data.token;
@@ -171,32 +163,10 @@ const App = () => {
     });
   };
 
-  const updateCart = () => {
-    console.log('this is my updateCart function');
-    // this function is called as part of use effect when teh line item
-    // state is updated....
-    // what i want to do is
-    // pass in the line item that was changed (how to get?)
-    // filter through the line item array in state
-    // if the id matches, that is the one that we need to update -
-    // so send that whole line item object (which has new quantity)
-    // over the wire as a put request which will replace that
-    //line item object wth the updated one
-
-    // const updatedLineItem=
-    // axios.put('/api/updateCart', updatedLineItem)
-  };
-
-  // const changeMood = async (e, selectedDay) => {
-  //   const selectedMood = e.target[0].value;
-  //   let updatedDay = { ...selectedDay, mood: selectedMood };
-  //   await axios
-  //     .put(`/api/daily-moods/${updatedDay.id}`, updatedDay)
-  //     .then(updateMoodState(updatedDay));
-  // };
-
   const totalItemsInCart = () => {
-    const quantityArray = lineItems.map(item => item.quantity);
+    const quantityArray = lineItems
+      .filter(lineItem => lineItem.orderId === cart.id)
+      .map(item => item.quantity);
     return quantityArray.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       0
@@ -253,6 +223,7 @@ const App = () => {
       <Router>
         <div>
           <h1>Grace Shopper</h1>
+<<<<<<< HEAD
           <nav className='navbar navbar-expand-lg navbar-light'>
             <li className='nav-link active'>
               <Link className='link' to='/login'>
@@ -280,6 +251,27 @@ const App = () => {
             <Route path='/guest'>
               <Products addToCart={addToCart} products={products} />
             </Route>
+=======
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/login">
+                Login
+              </Link>
+            </li>
+            <li className="nav-link active">
+              <Link className="link" to="/register">
+                Register
+              </Link>
+            </li>
+          </nav>
+          <Switch>
+            <Route path="/login">
+              <Login login={login} />
+            </Route>
+            <Route path="/register">
+              <CreateUser />
+            </Route>
+>>>>>>> master
           </Switch>
         </div>
       </Router>
@@ -289,41 +281,70 @@ const App = () => {
       <Router>
         <div>
           <h1>Grace Shopper</h1>
+<<<<<<< HEAD
           <nav className='navbar navbar-expand-lg navbar-light'>
             <li className='nav-link active'>
               <Link className='link' to='/'>
+=======
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/">
+>>>>>>> master
                 Products
               </Link>
             </li>
             <li>
+<<<<<<< HEAD
               <Link to='/cart'>
                 <span className='fa-layers fa-fw fa-3x'>
                   <FontAwesomeIcon icon={faShoppingCart} />
                   <span className='fa-layers-counter'>
+=======
+              <Link to="/cart">
+                <span className="fa-layers fa-fw fa-3x">
+                  <FontAwesomeIcon icon={faShoppingCart} />
+                  <span className="fa-layers-counter">
+>>>>>>> master
                     {totalItemsInCart()}
                   </span>
                 </span>
               </Link>
             </li>
+<<<<<<< HEAD
             <li className='nav-link'>
               <Link className='link' to='/orders'>
+=======
+            <li className="nav-link">
+              <Link className="link" to="/orders">
+>>>>>>> master
                 My Orders
               </Link>
             </li>
             {isAdmin === true && (
+<<<<<<< HEAD
               <li className='nav-link'>
                 <Link className='link' to='/adminpromos'>
+=======
+              <li className="nav-link">
+                <Link className="link" to="/adminpromos">
+>>>>>>> master
                   Edit Promos
                 </Link>
               </li>
             )}
             {isAdmin === true && (
+<<<<<<< HEAD
               <li className='nav-link'>
                 <Link className='link' to='/adminusers'>
+=======
+              <li className="nav-link">
+                <Link className="link" to="/adminusers">
+>>>>>>> master
                   Edit Users
                 </Link>
               </li>
             )}
+<<<<<<< HEAD
             <li className='nav-link'>
               <button
                 type='button'
@@ -331,11 +352,24 @@ const App = () => {
                 onClick={logout}
               >
                 Logout {auth.username}
+=======
+            <li className="nav-link">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={logout}
+              >
+                Logout {auth.username}{' '}
+>>>>>>> master
               </button>
             </li>
           </nav>
           <Switch>
+<<<<<<< HEAD
             <Route path='/orders'>
+=======
+            <Route path="/orders">
+>>>>>>> master
               <Orders
                 lineItems={lineItems}
                 products={products}
@@ -344,14 +378,18 @@ const App = () => {
               />
             </Route>
 
+<<<<<<< HEAD
             <Route path='/adminpromos'>
+=======
+            <Route path="/adminpromos">
+>>>>>>> master
               <AdminPromos allPromos={allPromos} setAllPromos={setAllPromos} />
             </Route>
 
-            <Route path='/adminusers'>
+            <Route path="/adminusers">
               <AdminUsers users={users} setUsers={setUsers} />
             </Route>
-            <Route path='/cart'>
+            <Route path="/cart">
               <Cart
                 promo={promo}
                 promoDescription={promoDescription}
@@ -367,12 +405,11 @@ const App = () => {
                 products={products}
                 lineItems={lineItems}
                 setLineItems={setLineItems}
-                updateCart={updateCart}
                 removePromo={removePromo}
                 total={total}
               />
             </Route>
-            <Route path='/'>
+            <Route path="/">
               <Products addToCart={addToCart} products={products} />
             </Route>
           </Switch>
