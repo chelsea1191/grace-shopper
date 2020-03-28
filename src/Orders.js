@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import axios from "axios";
-import Rating from "./Rating";
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const Orders = ({ lineItems, setLineItems, orders, products }) => {
   const edit = async (e, itemId, orderId) => {
     let rating = e.target.previousElementSibling.value;
     axios
-      .post("/api/rateItem", { rating, itemId, orderId })
+      .post('/api/rateItem', { rating, itemId, orderId })
       .then(response =>
         setLineItems([
           ...lineItems.filter(item => item.id !== itemId),
@@ -34,20 +33,20 @@ const Orders = ({ lineItems, setLineItems, orders, products }) => {
                   return (
                     <li key={lineItem.id}>
                       {product && product.name}
-                      <span className="quantity">
+                      <span className='quantity'>
                         Quantity: {lineItem.quantity}
                       </span>
                       {lineItem.rating && (
                         <span>user rating: {lineItem.rating}</span>
                       )}
                       <div>
-                        <label htmlFor="rating">Rate this item</label>
-                        <select id="rating">
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
+                        <label htmlFor='rating'>Rate this item</label>
+                        <select id='rating'>
+                          <option value='1'>1</option>
+                          <option value='2'>2</option>
+                          <option value='3'>3</option>
+                          <option value='4'>4</option>
+                          <option value='5'>5</option>
                         </select>
                         <button onClick={e => edit(e, lineItem.id, order.id)}>
                           submit
