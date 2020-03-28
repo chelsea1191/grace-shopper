@@ -37,6 +37,5 @@
     "qs": "^6.9.1",
     "react-router-dom": "^5.1.2"
   },
-  "description": "",
-  "proxy": "http://localhost:3000"
+  "description": ""
 }
