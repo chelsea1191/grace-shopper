@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const AdminPromos = ({ allPromos }) => {
+const AdminPromos = ({ allPromos, setAllPromos }) => {
   const [codeInput, setCodeInput] = useState([]);
   const [descriptionInput, setDescriptionInput] = useState([]);
   const [multiplierInput, setMultiplierInput] = useState([]);
@@ -17,26 +17,39 @@ const AdminPromos = ({ allPromos }) => {
     ev.preventDefault();
     if (multiplierInput <= 1 && multiplierInput >= 0) {
       setIsSubmitted(true);
-      axios.post("/api/addPromo", {
-        codeInput,
-        descriptionInput,
-        multiplierInput
-      });
+      axios
+        .post('/api/addPromo', {
+          codeInput,
+          descriptionInput,
+          multiplierInput
+        })
+        .then(
+          axios
+            .get('/api/getPromos')
+            .then(response => setAllPromos(response.data))
+        );
     } else {
-      setError("multiplier must be a decimal between 0 and 1");
+      setError('multiplier must be a decimal between 0 and 1');
     }
   };
 
   const handleOptionChange = ev => {
     let selection = ev.target.value;
     let promoId = ev.target.id;
-    axios.post("/api/changePromoStatus", { promoId, selection });
+    axios
+      .post('/api/changePromoStatus', { promoId, selection })
+      .then(
+        axios
+          .get('/api/getPromos')
+          .then(response => setAllPromos(response.data))
+      );
   };
+
   return (
     <div>
       {allPromos.map(promo => {
         return (
-          <div className="card" key={promo.id}>
+          <div className='card' key={promo.id}>
             <p>code: {promo.code}</p>
             <p>description: {promo.description}</p>
             <p>current status: {promo.status}</p>
@@ -44,17 +57,17 @@ const AdminPromos = ({ allPromos }) => {
               <div>
                 <input
                   id={promo.id}
-                  type="radio"
-                  value="active"
-                  checked={promo.status === "active"}
+                  type='radio'
+                  value='active'
+                  checked={promo.status === 'active'}
                   onChange={handleOptionChange}
                 />
                 <label>active</label>
                 <input
                   id={promo.id}
-                  type="radio"
-                  value="inactive"
-                  checked={promo.status === "inactive"}
+                  type='radio'
+                  value='inactive'
+                  checked={promo.status === 'inactive'}
                   onChange={handleOptionChange}
                 />
                 <label>inactive</label>
@@ -66,31 +79,31 @@ const AdminPromos = ({ allPromos }) => {
       <form onSubmit={submitNewPromo}>
         <h3>Add a New Promo</h3>
         <input
-          placeholder="code"
+          placeholder='code'
           value={codeInput}
           onChange={ev => setCodeInput(ev.target.value)}
         />
         <input
-          placeholder="description"
+          placeholder='description'
           value={descriptionInput}
           onChange={ev => setDescriptionInput(ev.target.value)}
         />
         <input
-          placeholder="multiplier (decimal less than 1)"
+          placeholder='multiplier (decimal less than 1)'
           value={multiplierInput}
           onChange={ev => setMultiplierInput(ev.target.value)}
         />
         {error && (
-          <p className="alert alert-danger" role="alert">
+          <p className='alert alert-danger' role='alert'>
             {error}
           </p>
         )}
         {isSubmitted && (
-          <p className="alert alert-success" role="alert">
+          <p className='alert alert-success' role='alert'>
             success!
           </p>
         )}
-        <button type="submit" className="btn btn-secondary">
+        <button type='submit' className='btn btn-secondary'>
           submit new promotion
         </button>
       </form>

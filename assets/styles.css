@@ -95,7 +95,7 @@ li > * {
   background-color: gray;
   border-color: gray;
   font-weight: bolder;
-
+}
 .wrapper {
   height: 28rem;
   width: 15rem;
@@ -110,5 +110,4 @@ li > * {
 .wrapper:hover {
   transform: scale(1);
   box-shadow: 5px 20px 30px rgba(0, 0, 0, 0.2);
-
 }
