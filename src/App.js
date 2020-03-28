@@ -323,6 +323,7 @@ const App = () => {
                 lineItems={lineItems}
                 setLineItems={setLineItems}
                 removePromo={removePromo}
+                headers={headers}
               />
             </Route>
             <Route path="/">
