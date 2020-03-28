@@ -16,14 +16,15 @@ const Products = ({ products, addToCart }) => {
                 <h4 className='card-price '>
                   ${Number(product.price).toFixed(2)}
                 </h4>
+                <button
+                  id='addtocart'
+                  type='button'
+                  className='btn btn-dark'
+                  onClick={() => addToCart(product.id)}
+                >
+                  Add to Cart
+                </button>
               </div>
-              <button
-                type='button'
-                className='btn btn-dark'
-                onClick={() => addToCart(product.id)}
-              >
-                Add to Cart
-              </button>
             </div>
           );
         })}

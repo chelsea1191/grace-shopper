@@ -36,6 +36,8 @@ const App = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [users, setUsers] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [total, setTotal] = useState('');
+  const [tax, setTax] = useState('');
 
   useEffect(() => {
     axios.get('/api/products').then(response => setProducts(response.data));
@@ -173,7 +175,6 @@ const App = () => {
 
   const getSubtotal = () => {
     let runningTotal = 0;
-    //gets subtotal of entire cart-- did not take tax into consideration yet
     lineItems
       .filter(lineItem => lineItem.orderId === cart.id)
       .map(lineItem => {
@@ -186,7 +187,13 @@ const App = () => {
           runningTotal += multiplier * (product.price * lineItem.quantity);
         }
       });
-    setSubtotal(runningTotal.toFixed(2));
+    let shipping = 5.99;
+    let tax = 1.07;
+    if (lineItems.length === 0) {
+      setSubtotal(0);
+    } else {
+      setSubtotal((runningTotal + shipping) * tax);
+    }
   };
 
   const removePromo = cartId => {
@@ -227,6 +234,11 @@ const App = () => {
                 Register
               </Link>
             </li>
+            <li className="nav-link active">
+              <Link className="link" to="/guest">
+                Browse Products
+              </Link>
+            </li>
           </nav>
           <Switch>
             <Route path="/login">
@@ -234,6 +246,9 @@ const App = () => {
             </Route>
             <Route path="/register">
               <CreateUser />
+            </Route>
+            <Route path="/guest">
+              <Products addToCart={addToCart} products={products} />
             </Route>
           </Switch>
         </div>
@@ -285,7 +300,7 @@ const App = () => {
                 className="btn btn-secondary"
                 onClick={logout}
               >
-                Logout {auth.username}{' '}
+                Logout {auth.username}
               </button>
             </li>
           </nav>
@@ -324,6 +339,7 @@ const App = () => {
                 setLineItems={setLineItems}
                 removePromo={removePromo}
                 headers={headers}
+                total={total}
               />
             </Route>
             <Route path="/">
