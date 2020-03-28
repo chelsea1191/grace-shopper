@@ -35,6 +35,7 @@ const App = () => {
 	const [promoDescription, setPromoDescription] = useState([]);
 	const [isSubmitted, setIsSubmitted] = useState(false);
 	const [users, setUsers] = useState([]);
+	const [isAdmin, setIsAdmin] = useState(false);
 
 	useEffect(() => {
 		axios.get("/api/products").then(response => setProducts(response.data));
@@ -86,6 +87,14 @@ const App = () => {
 		}
 	}, [auth]);
 
+	// useEffect(() => {
+	//   console.log('use effect is being called when line items changed');
+	//   if (auth.id) {
+	//     // const token = window.localStorage.getItem('token');
+	//     updateCart();
+	//   }
+	// }, [lineItems]);
+
 	const login = async credentials => {
 		const token = (await axios.post("/api/auth", credentials)).data.token;
 		window.localStorage.setItem("token", token);
@@ -95,12 +104,17 @@ const App = () => {
 	const exchangeTokenForAuth = async () => {
 		const response = await axios.get("/api/auth", headers());
 		setAuth(response.data);
+		if (response.data.role === "ADMIN") {
+			console.log("user is admin");
+			setIsAdmin(true);
+		}
 	};
 
 	const logout = () => {
 		window.location.hash = "#";
 		window.localStorage.removeItem("token");
 		setAuth({});
+		setIsAdmin(false);
 	};
 
 	useEffect(() => {
@@ -157,22 +171,36 @@ const App = () => {
 		});
 	};
 
-	const getSubtotal = () => {
-		//gets subtotal of entire cart-- did not take tax into consideration yet
-		lineItems
-			.filter(lineItem => lineItem.orderId === cart.id)
-			.map(lineItem => {
-				let product = products.find(
-					product => product.id === lineItem.productId
-				);
-				if (multiplier == null || multiplier == undefined) {
-					console.log("multiplier is null");
-					setSubtotal(product.price * lineItem.quantity);
-				} else {
-					console.log("multiplier is: ", multiplier);
-					setSubtotal(multiplier * (product.price * lineItem.quantity));
-				}
-			});
+	const updateCart = () => {
+		console.log("this is my updateCart function");
+		// this function is called as part of use effect when teh line item
+		// state is updated....
+		// what i want to do is
+		// pass in the line item that was changed (how to get?)
+		// filter through the line item array in state
+		// if the id matches, that is the one that we need to update -
+		// so send that whole line item object (which has new quantity)
+		// over the wire as a put request which will replace that
+		//line item object wth the updated one
+
+		// const updatedLineItem=
+		// axios.put('/api/updateCart', updatedLineItem)
+	};
+
+	// const changeMood = async (e, selectedDay) => {
+	//   const selectedMood = e.target[0].value;
+	//   let updatedDay = { ...selectedDay, mood: selectedMood };
+	//   await axios
+	//     .put(`/api/daily-moods/${updatedDay.id}`, updatedDay)
+	//     .then(updateMoodState(updatedDay));
+	// };
+
+	const totalItemsInCart = () => {
+		const quantityArray = lineItems.map(item => item.quantity);
+		return quantityArray.reduce(
+			(accumulator, currentValue) => accumulator + currentValue,
+			0
+		);
 	};
 
 	const getSubtotal = () => {
@@ -202,6 +230,8 @@ const App = () => {
 	};
 
 	const { view } = params;
+
+	console.log(lineItems);
 
 	if (!auth.id) {
 		return (
@@ -257,16 +287,20 @@ const App = () => {
 								My Orders
 							</Link>
 						</li>
-						<li className="nav-link">
-							<Link className="link" to="/adminpromos">
-								Edit Promos (admin)
-							</Link>
-						</li>
-						<li className="nav-link">
-							<Link className="link" to="/adminusers">
-								Edit Users (admin)
-							</Link>
-						</li>
+						{isAdmin === true && (
+							<li className="nav-link">
+								<Link className="link" to="/adminpromos">
+									Edit Promos
+								</Link>
+							</li>
+						)}
+						{isAdmin === true && (
+							<li className="nav-link">
+								<Link className="link" to="/adminusers">
+									Edit Users
+								</Link>
+							</li>
+						)}
 						<li className="nav-link">
 							<button
 								type="button"
@@ -283,11 +317,14 @@ const App = () => {
 								lineItems={lineItems}
 								products={products}
 								orders={orders}
+								setLineItems={setLineItems}
 							/>
 						</Route>
+
 						<Route path="/adminpromos">
 							<AdminPromos allPromos={allPromos} />
 						</Route>
+
 						<Route path="/adminusers">
 							<AdminUsers users={users} />
 						</Route>
@@ -307,6 +344,7 @@ const App = () => {
 								products={products}
 								lineItems={lineItems}
 								setLineItems={setLineItems}
+								updateCart={updateCart}
 								removePromo={removePromo}
 							/>
 						</Route>

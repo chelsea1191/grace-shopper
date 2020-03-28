@@ -23,7 +23,9 @@ const {
 	getLineItems,
 	applyPromo,
 	getAllPromos,
-	removePromo
+	updateLineItems,
+	removePromo,
+	rateItem
 } = require("./userMethods");
 
 const getProducts = amount => {
@@ -32,7 +34,7 @@ const getProducts = amount => {
 		let prodName = faker.commerce.productName();
 		let price = faker.commerce.price(0.99, 20.0, 2);
 		let text = faker.lorem.sentence(5);
-		let rating = faker.random.number({ min: 55, max: 100 });
+		let rating = faker.random.number({ min: 3, max: 5 });
 		let img = faker.image.imageUrl(300, 300, "animals", true);
 		let newProd = {
 			name: prodName,
@@ -97,7 +99,8 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       "orderId" UUID REFERENCES orders(id) NOT NULL,
       "productId" UUID REFERENCES products(id) NOT NULL,
-      quantity INTEGER DEFAULT 1
+      quantity INTEGER DEFAULT 1,
+      rating INT DEFAULT null
     );
 
     CREATE TABLE addresses(
@@ -169,12 +172,12 @@ const sync = async () => {
 	};
 };
 
-const addAddress = async address => {
+const addAddress = async (address, user) => {
 	const SQL =
 		"INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *";
 	return (
 		await client.query(SQL, [
-			address.id,
+			user.id,
 			address.address,
 			address.city,
 			address.state,
@@ -197,9 +200,11 @@ module.exports = {
 	getLineItems,
 	applyPromo,
 	getAllPromos,
+	updateLineItems,
 	removePromo,
 	changePromoStatus,
 	getAllUsers,
 	addNewPromo,
+	rateItem,
 	changeUserStatus
 };

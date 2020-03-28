@@ -1,4 +1,4 @@
-const client = require("./client");
+const client = require('./client');
 
 const getCart = async userId => {
   //find current order with CART status else make a new one upon login
@@ -36,15 +36,15 @@ const getPromo = async promo => {
 const createOrder = async (userId, total) => {
   //simply changes order status from cart to order and updates total
   const cart = await getCart(userId);
-  cart.status = "ORDER";
+  cart.status = 'ORDER';
   await client.query(`UPDATE orders SET total=$1 WHERE id=$2 returning *`, [
     total.subtotal,
-    cart.id
+    cart.id,
   ]);
   return (
     await client.query(`UPDATE orders SET status=$1 WHERE id=$2 returning *`, [
-      "ORDER",
-      cart.id
+      'ORDER',
+      cart.id,
     ])
   ).rows[0];
 };
@@ -101,7 +101,7 @@ const getLineItems = async userId => {
 const applyPromo = async (cartId, promoId) => {
   await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
     cartId,
-    promoId
+    promoId,
   ]);
 };
 
@@ -110,11 +110,26 @@ const getAllPromos = async () => {
   return results.rows;
 };
 
+const updateLineItems = async (lineItemId, lineItemQuantity) => {
+  console.log('updateLineItems is being called');
+  const SQL = `UPDATE "lineItems" SET quantity=$2 WHERE id=$1 returning *`;
+  const results = await client.query(SQL, [lineItemId, lineItemQuantity]);
+  console.log(results.rows[0]);
+  return results.rows[0];
+};
+
 const removePromo = async cartId => {
   await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
     cartId,
-    null
+    null,
   ]);
+};
+
+const rateItem = async (rating, itemId, orderId) => {
+  return await client.query(
+    `UPDATE "lineItems" SET rating=$1 WHERE id=$2 AND "orderId"=$3 returning *`,
+    [rating, itemId, orderId]
+  );
 };
 
 module.exports = {
@@ -127,5 +142,7 @@ module.exports = {
   getLineItems,
   applyPromo,
   getAllPromos,
-  removePromo
+  updateLineItems,
+  removePromo,
+  rateItem
 };
