@@ -89,14 +89,6 @@ const App = () => {
     }
   }, [auth]);
 
-  // useEffect(() => {
-  //   console.log('use effect is being called when line items changed');
-  //   if (auth.id) {
-  //     // const token = window.localStorage.getItem('token');
-  //     updateCart();
-  //   }
-  // }, [lineItems]);
-
   const login = async credentials => {
     const token = (await axios.post('/api/auth', credentials)).data.token;
     window.localStorage.setItem('token', token);
@@ -172,32 +164,10 @@ const App = () => {
     });
   };
 
-  const updateCart = () => {
-    console.log('this is my updateCart function');
-    // this function is called as part of use effect when teh line item
-    // state is updated....
-    // what i want to do is
-    // pass in the line item that was changed (how to get?)
-    // filter through the line item array in state
-    // if the id matches, that is the one that we need to update -
-    // so send that whole line item object (which has new quantity)
-    // over the wire as a put request which will replace that
-    //line item object wth the updated one
-
-    // const updatedLineItem=
-    // axios.put('/api/updateCart', updatedLineItem)
-  };
-
-  // const changeMood = async (e, selectedDay) => {
-  //   const selectedMood = e.target[0].value;
-  //   let updatedDay = { ...selectedDay, mood: selectedMood };
-  //   await axios
-  //     .put(`/api/daily-moods/${updatedDay.id}`, updatedDay)
-  //     .then(updateMoodState(updatedDay));
-  // };
-
   const totalItemsInCart = () => {
-    const quantityArray = lineItems.map(item => item.quantity);
+    const quantityArray = lineItems
+      .filter(lineItem => lineItem.orderId === cart.id)
+      .map(item => item.quantity);
     return quantityArray.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       0
@@ -245,6 +215,96 @@ const App = () => {
 
   const { view } = params;
 
+<<<<<<< HEAD
+  if (!auth.id) {
+    return (
+      <Router>
+        <div>
+          <h1>Grace Shopper</h1>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/login">
+                Login
+              </Link>
+            </li>
+            <li className="nav-link active">
+              <Link className="link" to="/register">
+                Register
+              </Link>
+            </li>
+          </nav>
+          <Switch>
+            <Route path="/login">
+              <Login login={login} />
+            </Route>
+            <Route path="/register">
+              <Register />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    );
+  } else {
+    return (
+      <Router>
+        <div>
+          <h1>Grace Shopper</h1>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <li className="nav-link active">
+              <Link className="link" to="/">
+                Products
+              </Link>
+            </li>
+            <li>
+              <Link to="/cart">
+                <span className="fa-layers fa-fw fa-3x">
+                  <FontAwesomeIcon icon={faShoppingCart} />
+                  <span className="fa-layers-counter">
+                    {totalItemsInCart()}
+                  </span>
+                </span>
+              </Link>
+            </li>
+            <li className="nav-link">
+              <Link className="link" to="/orders">
+                My Orders
+              </Link>
+            </li>
+            {isAdmin === true && (
+              <li className="nav-link">
+                <Link className="link" to="/adminpromos">
+                  Edit Promos
+                </Link>
+              </li>
+            )}
+            {isAdmin === true && (
+              <li className="nav-link">
+                <Link className="link" to="/adminusers">
+                  Edit Users
+                </Link>
+              </li>
+            )}
+            <li className="nav-link">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={logout}
+              >
+                Logout {auth.username}{' '}
+              </button>
+            </li>
+          </nav>
+          <Switch>
+            <Route path="/orders">
+              <Orders
+                lineItems={lineItems}
+                products={products}
+                orders={orders}
+                setLineItems={setLineItems}
+              />
+            </Route>
+=======
+>>>>>>> master
 
 	if (!auth.id) {
 		return (
@@ -358,7 +418,6 @@ const App = () => {
                 products={products}
                 lineItems={lineItems}
                 setLineItems={setLineItems}
-                updateCart={updateCart}
                 removePromo={removePromo}
               />
             </Route>

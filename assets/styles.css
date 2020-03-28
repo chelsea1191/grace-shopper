@@ -86,7 +86,7 @@ li > * {
   color: orange;
 }
 
-#quantity-field {
+.quantity-field {
   width: 50px;
   text-align: center;
 }
@@ -96,6 +96,10 @@ li > * {
   border-color: gray;
   font-weight: bolder;
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> master
 .wrapper {
   height: 28rem;
   width: 15rem;
