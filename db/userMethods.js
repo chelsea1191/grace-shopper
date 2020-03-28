@@ -39,12 +39,12 @@ const createOrder = async (userId, total) => {
   cart.status = 'ORDER';
   await client.query(`UPDATE orders SET total=$1 WHERE id=$2 returning *`, [
     total.subtotal,
-    cart.id,
+    cart.id
   ]);
   return (
     await client.query(`UPDATE orders SET status=$1 WHERE id=$2 returning *`, [
       'ORDER',
-      cart.id,
+      cart.id
     ])
   ).rows[0];
 };
@@ -101,27 +101,26 @@ const getLineItems = async userId => {
 const applyPromo = async (cartId, promoId) => {
   await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
     cartId,
-    promoId,
+    promoId
   ]);
 };
 
 const getAllPromos = async () => {
-  const results = await client.query(`SELECT * FROM promos;`);
+  const results = await client.query(`SELECT * FROM promos ORDER BY id`);
   return results.rows;
 };
 
 const updateLineItems = async (lineItemId, lineItemQuantity) => {
-  console.log('updateLineItems is being called');
   const SQL = `UPDATE "lineItems" SET quantity=$2 WHERE id=$1 returning *`;
   const results = await client.query(SQL, [lineItemId, lineItemQuantity]);
-  console.log(results.rows[0]);
+
   return results.rows[0];
 };
 
 const removePromo = async cartId => {
   await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
     cartId,
-    null,
+    null
   ]);
 };
 
