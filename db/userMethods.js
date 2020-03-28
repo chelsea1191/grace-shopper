@@ -125,6 +125,13 @@ const removePromo = async cartId => {
   ]);
 };
 
+const rateItem = async (rating, itemId, orderId) => {
+  return await client.query(
+    `UPDATE "lineItems" SET rating=$1 WHERE id=$2 AND "orderId"=$3 returning *`,
+    [rating, itemId, orderId]
+  );
+};
+
 module.exports = {
   getCart,
   getOrders,
@@ -137,4 +144,5 @@ module.exports = {
   getAllPromos,
   updateLineItems,
   removePromo,
+  rateItem
 };

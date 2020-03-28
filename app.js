@@ -60,7 +60,7 @@ app.get('/api/getAllUsers', (req, res, next) => {
   db.getAllUsers()
     .then(users => res.send(users))
     .catch(next);
-}); /////////////
+});
 
 app.post('/api/changeUserStatus', (req, res, next) => {
   db.changeUserStatus(req.body.userId, req.body.selection)
@@ -86,7 +86,13 @@ app.get('/api/getPromos', (req, res, next) => {
     .catch(next);
 });
 
-app.post('/api/createOrder', (req, res, next) => {
+app.post("/api/rateItem", (req, res, next) => {
+  db.rateItem(req.body.rating, req.body.itemId, req.body.orderId)
+    .then(response => res.send(response))
+    .catch(next);
+});
+
+app.post("/api/createOrder", (req, res, next) => {
   db.createOrder(req.user.id, req.body)
     .then(order => res.send(order))
     .catch(next);
