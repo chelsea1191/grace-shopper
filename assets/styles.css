@@ -42,13 +42,8 @@ form > * {
 
 .horizontal {
   display: flex;
-}
-
-.horizontal > * {
-  flex: 1;
-  margin: 1rem;
-  border: solid 1px dodgerBlue;
-  padding: 1rem;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .link {
@@ -101,7 +96,6 @@ li > * {
   width: 15rem;
   background: white;
   position: relative;
-  overflow: hidden;
   border-radius: 10px 10px 10px 10px;
   box-shadow: 0;
   transform: scale(0.95);
@@ -110,4 +104,9 @@ li > * {
 .wrapper:hover {
   transform: scale(1);
   box-shadow: 5px 20px 30px rgba(0, 0, 0, 0.2);
+}
+.avatar {
+  height: 70px;
+  width: 70px;
+  border-radius: 15px;
 }

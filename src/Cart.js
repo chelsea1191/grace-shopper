@@ -17,12 +17,12 @@ const Cart = ({
   isSubmitted,
   products,
   setLineItems,
-  updateCart,
-  removePromo
+  removePromo,
+  total
 }) => {
   let cartId = cart.id;
   let promoId;
-
+  let shipping = 5.99;
   const onChange = ev => {
     let uppercaseInput = ev.target.value.toUpperCase();
     setPromo(uppercaseInput);
@@ -66,6 +66,15 @@ const Cart = ({
     }
   };
 
+  const getTax = () => {
+    if (subtotal * 0.93 - 5.99 <= 0) {
+      return 0;
+    } else {
+      let tax = subtotal * 0.07;
+      return tax;
+    }
+  };
+
   const incrementQuantity = lineItem => {
     const plusQuantity = lineItem.quantity + 1;
     setNewQuantity(lineItem, plusQuantity);
@@ -95,9 +104,11 @@ const Cart = ({
               product => product.id === lineItem.productId
             );
             return (
-              <li key={lineItem.id}>
-                {product && product.name} <br />
-                {product.description} <br />${product.price} each
+              <li className='horizontal' key={lineItem.id}>
+                <img className='avatar' src={product.image}></img>
+                {product && product.name} <br />${product.price} each <br />{' '}
+                item subtotal: $
+                {Number(lineItem.quantity * product.price).toFixed(2)}
                 <div className='quantity'>
                   <label htmlFor='name'>Quantity: </label>
                   <span className='input-group-btn'>
@@ -134,16 +145,16 @@ const Cart = ({
                     Remove From Cart
                   </button>
                 </div>
-                item subtotal: $
-                {Number(lineItem.quantity * product.price).toFixed(2)}
               </li>
             );
           })}
       </ul>
-      <p>cart subtotal: ${subtotal}</p>
+      <p>shipping (3-5 business days): ${shipping}</p>
+      <p>tax: ${getTax().toFixed(2)} </p>
+      <p>order total: ${subtotal.toFixed(2)}</p>
       <form onSubmit={onPromoSubmit}>
         <input placeholder='promo code' value={promo} onChange={onChange} />
-        <button type='button' className='btn btn-secondary'>
+        <button type='submit' className='btn btn-secondary'>
           submit promo code
         </button>
         {isSubmitted && (
