@@ -87,14 +87,6 @@ const App = () => {
     }
   }, [auth]);
 
-  // useEffect(() => {
-  //   console.log('use effect is being called when line items changed');
-  //   if (auth.id) {
-  //     // const token = window.localStorage.getItem('token');
-  //     updateCart();
-  //   }
-  // }, [lineItems]);
-
   const login = async credentials => {
     const token = (await axios.post('/api/auth', credentials)).data.token;
     window.localStorage.setItem('token', token);
@@ -104,8 +96,8 @@ const App = () => {
   const exchangeTokenForAuth = async () => {
     const response = await axios.get('/api/auth', headers());
     setAuth(response.data);
-    if (response.data.role === "ADMIN") {
-      console.log("user is admin");
+    if (response.data.role === 'ADMIN') {
+      console.log('user is admin');
       setIsAdmin(true);
     }
   };
@@ -169,32 +161,10 @@ const App = () => {
     });
   };
 
-  const updateCart = () => {
-    console.log('this is my updateCart function');
-    // this function is called as part of use effect when teh line item
-    // state is updated....
-    // what i want to do is
-    // pass in the line item that was changed (how to get?)
-    // filter through the line item array in state
-    // if the id matches, that is the one that we need to update -
-    // so send that whole line item object (which has new quantity)
-    // over the wire as a put request which will replace that
-    //line item object wth the updated one
-
-    // const updatedLineItem=
-    // axios.put('/api/updateCart', updatedLineItem)
-  };
-
-  // const changeMood = async (e, selectedDay) => {
-  //   const selectedMood = e.target[0].value;
-  //   let updatedDay = { ...selectedDay, mood: selectedMood };
-  //   await axios
-  //     .put(`/api/daily-moods/${updatedDay.id}`, updatedDay)
-  //     .then(updateMoodState(updatedDay));
-  // };
-
   const totalItemsInCart = () => {
-    const quantityArray = lineItems.map(item => item.quantity);
+    const quantityArray = lineItems
+      .filter(lineItem => lineItem.orderId === cart.id)
+      .map(item => item.quantity);
     return quantityArray.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       0
@@ -228,8 +198,6 @@ const App = () => {
   };
 
   const { view } = params;
-
-  console.log(lineItems);
 
   if (!auth.id) {
     return (
@@ -342,7 +310,6 @@ const App = () => {
                 products={products}
                 lineItems={lineItems}
                 setLineItems={setLineItems}
-                updateCart={updateCart}
                 removePromo={removePromo}
               />
             </Route>

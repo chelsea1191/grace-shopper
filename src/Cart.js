@@ -17,7 +17,6 @@ const Cart = ({
   isSubmitted,
   products,
   setLineItems,
-  updateCart,
   removePromo,
 }) => {
   let cartId = cart.id;
@@ -112,7 +111,7 @@ const Cart = ({
                     </button>
                   </span>
                   <input
-                    id="quantity-field"
+                    className="quantity-field"
                     type="text"
                     name="quantity"
                     defaultValue={lineItem.quantity}
