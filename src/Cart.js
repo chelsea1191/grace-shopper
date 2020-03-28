@@ -112,7 +112,7 @@ const Cart = ({
                     className="quantity-field"
                     type="text"
                     name="quantity"
-                    defaultValue={lineItem.quantity}
+                    value={lineItem.quantity}
                     onChange={e => changeQuantity(lineItem, e)}
                   />
                   <span className="input-group-btn">

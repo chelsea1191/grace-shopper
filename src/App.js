@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import qs from 'qs';
 import axios from 'axios';
@@ -13,13 +12,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-
 const headers = () => {
   const token = window.localStorage.getItem('token');
   return {
     headers: {
-      authorization: token
-    }
+      authorization: token,
+    },
   };
 };
 
@@ -121,7 +119,6 @@ const App = () => {
     exchangeTokenForAuth();
   }, []);
 
-
   useEffect(() => {
     getSubtotal();
   }, [cart, multiplier, auth, lineItems]);
@@ -200,22 +197,20 @@ const App = () => {
     });
   };
 
-	const errrorHandler = error => {
-		if (error.status === 401) {
-			console.log("User is not authorized for this function.");
-		} else if (error.status === 404) {
-			console.log("Undefined address, page not found.");
-		} else if (error.status === 500) {
-			console.log(
-				"Server could not be more specific on what the exact problem is."
-			);
-		}
-	};
-
+  const errrorHandler = error => {
+    if (error.status === 401) {
+      console.log('User is not authorized for this function.');
+    } else if (error.status === 404) {
+      console.log('Undefined address, page not found.');
+    } else if (error.status === 500) {
+      console.log(
+        'Server could not be more specific on what the exact problem is.'
+      );
+    }
+  };
 
   const { view } = params;
 
-<<<<<<< HEAD
   if (!auth.id) {
     return (
       <Router>
@@ -238,7 +233,7 @@ const App = () => {
               <Login login={login} />
             </Route>
             <Route path="/register">
-              <Register />
+              <CreateUser />
             </Route>
           </Switch>
         </div>
@@ -303,106 +298,15 @@ const App = () => {
                 setLineItems={setLineItems}
               />
             </Route>
-=======
->>>>>>> master
 
-	if (!auth.id) {
-		return (
-			<Router>
-				<div>
-					<h1>Grace Shopper</h1>
-					<nav className="navbar navbar-expand-lg navbar-light">
-						<li className="nav-link active">
-							<Link className="link" to="/login">
-								Login
-							</Link>
-						</li>
-						<li className="nav-link active">
-							<Link className="link" to="/register">
-								Register
-							</Link>
-						</li>
-					</nav>
-					<Switch>
-						<Route path="/login">
-							<Login login={login} />
-						</Route>
-						<Route path="/register">
-							<CreateUser />
-						</Route>
-					</Switch>
-				</div>
-			</Router>
-		);
-	} else {
-		return (
-			<Router>
-				<div>
-					<h1>Grace Shopper</h1>
-					<nav className="navbar navbar-expand-lg navbar-light">
-						<li className="nav-link active">
-							<Link className="link" to="/">
-								Products
-							</Link>
-						</li>
-						<li>
-							<Link to="/cart">
-								<span className="fa-layers fa-fw fa-3x">
-									<FontAwesomeIcon icon={faShoppingCart} />
-									<span className="fa-layers-counter">
-										{totalItemsInCart()}
-									</span>
-								</span>
-							</Link>
-						</li>
-						<li className="nav-link">
-							<Link className="link" to="/orders">
-								My Orders
-							</Link>
-						</li>
-						{isAdmin === true && (
-							<li className="nav-link">
-								<Link className="link" to="/adminpromos">
-									Edit Promos
-								</Link>
-							</li>
-						)}
-						{isAdmin === true && (
-							<li className="nav-link">
-								<Link className="link" to="/adminusers">
-									Edit Users
-								</Link>
-							</li>
-						)}
-						<li className="nav-link">
-							<button
-								type="button"
-								className="btn btn-secondary"
-								onClick={logout}
-							>
-								Logout {auth.username}{" "}
-							</button>
-						</li>
-					</nav>
-					<Switch>
-						<Route path="/orders">
-							<Orders
-								lineItems={lineItems}
-								products={products}
-								orders={orders}
-								setLineItems={setLineItems}
-							/>
-						</Route>
-
-
-            <Route path='/adminpromos'>
+            <Route path="/adminpromos">
               <AdminPromos allPromos={allPromos} setAllPromos={setAllPromos} />
             </Route>
 
-            <Route path='/adminusers'>
+            <Route path="/adminusers">
               <AdminUsers users={users} setUsers={setUsers} />
             </Route>
-            <Route path='/cart'>
+            <Route path="/cart">
               <Cart
                 promo={promo}
                 promoDescription={promoDescription}
@@ -421,7 +325,7 @@ const App = () => {
                 removePromo={removePromo}
               />
             </Route>
-            <Route path='/'>
+            <Route path="/">
               <Products addToCart={addToCart} products={products} />
             </Route>
           </Switch>
