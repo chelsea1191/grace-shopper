@@ -8,22 +8,15 @@ const Products = ({ products, addToCart }) => {
       <div className="container-fluid">
         {products.map(product => {
           return (
-            <div className="card" key={product.id}>
+            <div className="wrapper" key={product.id}>
               <img className="card-img-top" src={product.image}></img>
               <div className="card-body">
-                <h5 className="card-title">{product.name}</h5>
-                <span className="card-text">
-                  Description: {product.description}
-                </span>{" "}
-                <br />
-                <span className="card-text">
-                  User Rating: {product.rating}
-                </span>{" "}
-                <br />
-                <span className="card-price">
-                  ${Number(product.price).toFixed(2)}
-                </span>
                 <Rating rating={product.rating} />
+
+                <h5 className="card-title">{product.name}</h5>
+                <h4 className="card-price ">
+                  ${Number(product.price).toFixed(2)}
+                </h4>
               </div>
               <button
                 type="button"

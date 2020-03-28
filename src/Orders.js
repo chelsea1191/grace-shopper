@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import Rating from "./Rating";
 
-const Orders = ({ lineItems, orders, products }) => {
+const Orders = ({ lineItems, setLineItems, orders, products }) => {
+  const edit = async (e, itemId, orderId) => {
+    let rating = e.target.previousElementSibling.value;
+    axios
+      .post("/api/rateItem", { rating, itemId, orderId })
+      .then(response =>
+        setLineItems([
+          ...lineItems.filter(item => item.id !== itemId),
+          response.data.rows[0]
+        ])
+      );
+  };
 
   return (
     <div>
@@ -24,6 +37,22 @@ const Orders = ({ lineItems, orders, products }) => {
                       <span className="quantity">
                         Quantity: {lineItem.quantity}
                       </span>
+                      {lineItem.rating && (
+                        <span>user rating: {lineItem.rating}</span>
+                      )}
+                      <div>
+                        <label htmlFor="rating">Rate this item</label>
+                        <select id="rating">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                        </select>
+                        <button onClick={e => edit(e, lineItem.id, order.id)}>
+                          submit
+                        </button>
+                      </div>
                     </li>
                   );
                 })}
@@ -35,7 +64,6 @@ const Orders = ({ lineItems, orders, products }) => {
       </ul>
     </div>
   );
-
 };
 
 export default Orders;

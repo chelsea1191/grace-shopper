@@ -1,6 +1,11 @@
 - npm i
 - create database university_grace_shopper
 - npm run start:dev
-- login with seeded users
+- login with seeded users:
   -username: moe, password: MOE (USER)
-  -username: lucy, password: LUCY (ADMIN)git all
+  -username: lucy, password: LUCY (ADMIN)
+- promo codes:
+  -TENOFF for 10% off
+  -UNF40 for 40% off
+  -SPRING20 for 20% off
+- ADMIN users can activate/deactivate users and promo codes, and add promo codes
