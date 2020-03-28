@@ -1,7 +1,8 @@
 import React from 'react';
 import Rating from './Rating';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-const Products = ({ products, addToCart }) => {
+const Products = ({ products, addToCart, setView }) => {
   return (
     <div>
       <h2>Products</h2>
@@ -9,7 +10,12 @@ const Products = ({ products, addToCart }) => {
         {products.map(product => {
           return (
             <div className='wrapper' key={product.id}>
-              <img className='card-img-top' src={product.image}></img>
+              <Link
+                to={`/products/${product.id}`}
+                onClick={el => setView(product)}
+              >
+                <img className='card-img-top' src={product.image}></img>
+              </Link>
               <div className='card-body'>
                 <Rating rating={product.rating} />
                 <h5 className='card-title'>{product.name}</h5>

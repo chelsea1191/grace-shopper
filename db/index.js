@@ -36,12 +36,16 @@ const getProducts = amount => {
     let text = faker.lorem.sentence(5);
     let rating = faker.random.number({ min: 3, max: 5 });
     let img = faker.image.imageUrl(300, 300, 'animals', true);
+    let color = faker.commerce.color();
+    let material = faker.commerce.productMaterial();
     let newProd = {
       name: prodName,
       price: price,
       description: text,
       rating: rating,
-      image: img
+      image: img,
+      color: color,
+      material: material
     };
     products.push(newProd);
   }
@@ -82,7 +86,9 @@ const sync = async () => {
 			price DECIMAL NOT NULL,
 			description VARCHAR(255),
 			rating INT,
-			image VARCHAR(255),
+      image VARCHAR(255),
+      material VARCHAR(255),
+      color VARCHAR(50),
       CHECK (char_length(name) > 0)
     );
 
