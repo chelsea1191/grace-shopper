@@ -1,6 +1,6 @@
 const client = require('./client');
 
-const getCart = async userId => {
+const getCart = async (userId) => {
   //find current order with CART status else make a new one upon login
   const response = await client.query(
     `SELECT * FROM orders WHERE status='CART' and "userId"=$1`,
@@ -17,7 +17,7 @@ const getCart = async userId => {
   ).rows[0];
 };
 
-const getOrders = async userId => {
+const getOrders = async (userId) => {
   //get all orders where status is NOT cart
   return (
     await client.query(
@@ -27,7 +27,7 @@ const getOrders = async userId => {
   ).rows;
 };
 
-const getPromo = async promo => {
+const getPromo = async (promo) => {
   return (
     await client.query(`SELECT * FROM promos WHERE code=$1`, [promo.promo])
   ).rows[0];
@@ -86,7 +86,7 @@ const removeFromCart = async ({ lineItemId, userId }) => {
   );
 };
 
-const getLineItems = async userId => {
+const getLineItems = async (userId) => {
   //get line items of corresponding order
   const SQL = `
     SELECT "lineItems".*
@@ -117,7 +117,7 @@ const updateLineItems = async (lineItemId, lineItemQuantity) => {
   return results.rows[0];
 };
 
-const removePromo = async cartId => {
+const removePromo = async (cartId) => {
   await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
     cartId,
     null

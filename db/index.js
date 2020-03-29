@@ -28,7 +28,7 @@ const {
   rateItem
 } = require('./userMethods');
 
-const getProducts = amount => {
+const getProducts = (amount) => {
   let products = [];
   for (let i = 0; i < amount; i++) {
     let prodName = faker.commerce.productName();
@@ -36,12 +36,16 @@ const getProducts = amount => {
     let text = faker.lorem.sentence(5);
     let rating = faker.random.number({ min: 3, max: 5 });
     let img = faker.image.imageUrl(300, 300, 'animals', true);
+    let color = faker.commerce.color();
+    let material = faker.commerce.productMaterial();
     let newProd = {
       name: prodName,
       price: price,
       description: text,
       rating: rating,
-      image: img
+      image: img,
+      color: color,
+      material: material
     };
     products.push(newProd);
   }
@@ -82,7 +86,9 @@ const sync = async () => {
 			price DECIMAL NOT NULL,
 			description VARCHAR(255),
 			rating INT,
-			image VARCHAR(255),
+      image VARCHAR(255),
+      material VARCHAR(255),
+      color VARCHAR(50),
       CHECK (char_length(name) > 0)
     );
 
@@ -90,7 +96,7 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       "userId" UUID REFERENCES users(id) NOT NULL,
       status VARCHAR(10) DEFAULT 'CART',
-      total DECIMAL DEFAULT 0,
+      total DECIMAL(100, 2) DEFAULT 0,
       promo UUID REFERENCES promos(id) DEFAULT NULL,
       "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
@@ -143,10 +149,10 @@ const sync = async () => {
   const _products = getProducts(25);
 
   const [lucy, moe] = await Promise.all(
-    Object.values(_users).map(user => users.create(user))
+    Object.values(_users).map((user) => users.create(user))
   );
   const [foo, bar, bazz] = await Promise.all(
-    Object.values(_products).map(product => products.create(product))
+    Object.values(_products).map((product) => products.create(product))
   );
 
   const _orders = {
