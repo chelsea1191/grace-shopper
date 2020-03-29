@@ -1,34 +1,35 @@
-const client = require('./client');
+const client = require("./client");
 
-const { authenticate, compare, findUserFromToken, hash } = require('./auth');
+const { authenticate, compare, findUserFromToken, hash } = require("./auth");
 
-const models = ({ products, users, orders, lineItems } = require('./models'));
+const models = ({ products, users, orders, lineItems } = require("./models"));
 
-const faker = require('faker');
-
-const {
-  changePromoStatus,
-  getAllUsers,
-  addNewPromo,
-  changeUserStatus
-} = require('./adminMethods');
+const faker = require("faker");
 
 const {
-  getCart,
-  getOrders,
-  addToCart,
-  getPromo,
-  removeFromCart,
-  createOrder,
-  getLineItems,
-  applyPromo,
-  getAllPromos,
-  updateLineItems,
-  removePromo,
-  rateItem
-} = require('./userMethods');
+	changePromoStatus,
+	getAllUsers,
+	addNewPromo,
+	changeUserStatus
+} = require("./adminMethods");
 
-const getProducts = amount => {
+const {
+	getCart,
+	getOrders,
+	addToCart,
+	getPromo,
+	removeFromCart,
+	createOrder,
+	getLineItems,
+	applyPromo,
+	getAllPromos,
+	updateLineItems,
+	removePromo,
+	rateItem
+} = require("./userMethods");
+
+
+const getProducts = (amount) => {
   let products = [];
   for (let i = 0; i < amount; i++) {
     let prodName = faker.commerce.productName();
@@ -36,12 +37,16 @@ const getProducts = amount => {
     let text = faker.lorem.sentence(5);
     let rating = faker.random.number({ min: 3, max: 5 });
     let img = faker.image.imageUrl(300, 300, 'animals', true);
+    let color = faker.commerce.color();
+    let material = faker.commerce.productMaterial();
     let newProd = {
       name: prodName,
       price: price,
       description: text,
       rating: rating,
-      image: img
+      image: img,
+      color: color,
+      material: material
     };
     products.push(newProd);
   }
@@ -49,7 +54,7 @@ const getProducts = amount => {
 };
 
 const sync = async () => {
-  const SQL = `
+	const SQL = `
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     DROP TABLE IF EXISTS addresses;
     DROP TABLE IF EXISTS "lineItems";
@@ -82,7 +87,9 @@ const sync = async () => {
 			price DECIMAL NOT NULL,
 			description VARCHAR(255),
 			rating INT,
-			image VARCHAR(255),
+      image VARCHAR(255),
+      material VARCHAR(255),
+      color VARCHAR(50),
       CHECK (char_length(name) > 0)
     );
 
@@ -90,7 +97,7 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       "userId" UUID REFERENCES users(id) NOT NULL,
       status VARCHAR(10) DEFAULT 'CART',
-      total DECIMAL DEFAULT 0,
+      total DECIMAL(100, 2) DEFAULT 0,
       promo UUID REFERENCES promos(id) DEFAULT NULL,
       "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
@@ -143,10 +150,10 @@ const sync = async () => {
   const _products = getProducts(25);
 
   const [lucy, moe] = await Promise.all(
-    Object.values(_users).map(user => users.create(user))
+    Object.values(_users).map((user) => users.create(user))
   );
   const [foo, bar, bazz] = await Promise.all(
-    Object.values(_products).map(product => products.create(product))
+    Object.values(_products).map((product) => products.create(product))
   );
 
   const _orders = {
@@ -172,39 +179,40 @@ const sync = async () => {
   };
 };
 
-const addAddress = async (address, user) => {
-  const SQL =
-    'INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *';
-  return (
-    await client.query(SQL, [
-      user.id,
-      address.address,
-      address.city,
-      address.state,
-      address.zip
-    ])
-  ).rows[0];
+const addAddress = async address => {
+	const SQL =
+		"INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *";
+	return (
+		await client.query(SQL, [
+			address.id,
+			address.address,
+			address.city,
+			address.state,
+			address.zip
+		])
+	).rows[0];
 };
 
 module.exports = {
-  sync,
-  models,
-  authenticate,
-  findUserFromToken,
-  getCart,
-  getOrders,
-  getPromo,
-  addToCart,
-  removeFromCart,
-  createOrder,
-  getLineItems,
-  applyPromo,
-  getAllPromos,
-  updateLineItems,
-  removePromo,
-  changePromoStatus,
-  getAllUsers,
-  addNewPromo,
-  rateItem,
-  changeUserStatus
+	sync,
+	models,
+	authenticate,
+	findUserFromToken,
+	getCart,
+	getOrders,
+	getPromo,
+	addToCart,
+	removeFromCart,
+	createOrder,
+	getLineItems,
+	applyPromo,
+	getAllPromos,
+	updateLineItems,
+	removePromo,
+	changePromoStatus,
+	getAllUsers,
+	addNewPromo,
+	rateItem,
+	changeUserStatus,
+	addAddress
 };
