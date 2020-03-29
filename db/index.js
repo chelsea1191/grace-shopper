@@ -1,32 +1,33 @@
-const client = require('./client');
+const client = require("./client");
 
-const { authenticate, compare, findUserFromToken, hash } = require('./auth');
+const { authenticate, compare, findUserFromToken, hash } = require("./auth");
 
-const models = ({ products, users, orders, lineItems } = require('./models'));
+const models = ({ products, users, orders, lineItems } = require("./models"));
 
-const faker = require('faker');
-
-const {
-  changePromoStatus,
-  getAllUsers,
-  addNewPromo,
-  changeUserStatus
-} = require('./adminMethods');
+const faker = require("faker");
 
 const {
-  getCart,
-  getOrders,
-  addToCart,
-  getPromo,
-  removeFromCart,
-  createOrder,
-  getLineItems,
-  applyPromo,
-  getAllPromos,
-  updateLineItems,
-  removePromo,
-  rateItem
-} = require('./userMethods');
+	changePromoStatus,
+	getAllUsers,
+	addNewPromo,
+	changeUserStatus
+} = require("./adminMethods");
+
+const {
+	getCart,
+	getOrders,
+	addToCart,
+	getPromo,
+	removeFromCart,
+	createOrder,
+	getLineItems,
+	applyPromo,
+	getAllPromos,
+	updateLineItems,
+	removePromo,
+	rateItem
+} = require("./userMethods");
+
 
 const getProducts = (amount) => {
   let products = [];
@@ -53,7 +54,7 @@ const getProducts = (amount) => {
 };
 
 const sync = async () => {
-  const SQL = `
+	const SQL = `
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     DROP TABLE IF EXISTS addresses;
     DROP TABLE IF EXISTS "lineItems";
@@ -178,39 +179,40 @@ const sync = async () => {
   };
 };
 
-const addAddress = async (address, user) => {
-  const SQL =
-    'INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *';
-  return (
-    await client.query(SQL, [
-      user.id,
-      address.address,
-      address.city,
-      address.state,
-      address.zip
-    ])
-  ).rows[0];
+const addAddress = async address => {
+	const SQL =
+		"INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *";
+	return (
+		await client.query(SQL, [
+			address.id,
+			address.address,
+			address.city,
+			address.state,
+			address.zip
+		])
+	).rows[0];
 };
 
 module.exports = {
-  sync,
-  models,
-  authenticate,
-  findUserFromToken,
-  getCart,
-  getOrders,
-  getPromo,
-  addToCart,
-  removeFromCart,
-  createOrder,
-  getLineItems,
-  applyPromo,
-  getAllPromos,
-  updateLineItems,
-  removePromo,
-  changePromoStatus,
-  getAllUsers,
-  addNewPromo,
-  rateItem,
-  changeUserStatus
+	sync,
+	models,
+	authenticate,
+	findUserFromToken,
+	getCart,
+	getOrders,
+	getPromo,
+	addToCart,
+	removeFromCart,
+	createOrder,
+	getLineItems,
+	applyPromo,
+	getAllPromos,
+	updateLineItems,
+	removePromo,
+	changePromoStatus,
+	getAllUsers,
+	addNewPromo,
+	rateItem,
+	changeUserStatus,
+	addAddress
 };
