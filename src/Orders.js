@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Orders = ({ lineItems, setLineItems, orders, products }) => {
@@ -6,9 +6,9 @@ const Orders = ({ lineItems, setLineItems, orders, products }) => {
     let rating = e.target.previousElementSibling.value;
     axios
       .post('/api/rateItem', { rating, itemId, orderId })
-      .then(response =>
+      .then((response) =>
         setLineItems([
-          ...lineItems.filter(item => item.id !== itemId),
+          ...lineItems.filter((item) => item.id !== itemId),
           response.data.rows[0]
         ])
       );
@@ -18,17 +18,17 @@ const Orders = ({ lineItems, setLineItems, orders, products }) => {
     <div>
       <h2>Orders ({orders.length})</h2>
       <ul>
-        {orders.map(order => {
+        {orders.map((order) => {
           const _lineItems = lineItems.filter(
-            lineItem => lineItem.orderId === order.id
+            (lineItem) => lineItem.orderId === order.id
           );
           return (
             <li key={order.id}>
               <div>OrderID: {order.id.slice(0, 4)}</div>
               <ul>
-                {_lineItems.map(lineItem => {
+                {_lineItems.map((lineItem) => {
                   const product = products.find(
-                    product => product.id === lineItem.productId
+                    (product) => product.id === lineItem.productId
                   );
                   return (
                     <li key={lineItem.id}>
@@ -48,7 +48,7 @@ const Orders = ({ lineItems, setLineItems, orders, products }) => {
                           <option value='4'>4</option>
                           <option value='5'>5</option>
                         </select>
-                        <button onClick={e => edit(e, lineItem.id, order.id)}>
+                        <button onClick={(e) => edit(e, lineItem.id, order.id)}>
                           submit
                         </button>
                       </div>

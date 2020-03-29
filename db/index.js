@@ -28,7 +28,7 @@ const {
   rateItem
 } = require('./userMethods');
 
-const getProducts = amount => {
+const getProducts = (amount) => {
   let products = [];
   for (let i = 0; i < amount; i++) {
     let prodName = faker.commerce.productName();
@@ -96,7 +96,7 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       "userId" UUID REFERENCES users(id) NOT NULL,
       status VARCHAR(10) DEFAULT 'CART',
-      total DECIMAL DEFAULT 0,
+      total DECIMAL(100, 2) DEFAULT 0,
       promo UUID REFERENCES promos(id) DEFAULT NULL,
       "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
@@ -149,10 +149,10 @@ const sync = async () => {
   const _products = getProducts(25);
 
   const [lucy, moe] = await Promise.all(
-    Object.values(_users).map(user => users.create(user))
+    Object.values(_users).map((user) => users.create(user))
   );
   const [foo, bar, bazz] = await Promise.all(
-    Object.values(_products).map(product => products.create(product))
+    Object.values(_products).map((product) => products.create(product))
   );
 
   const _orders = {

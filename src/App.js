@@ -250,7 +250,11 @@ const App = () => {
               <CreateUser />
             </Route>
             <Route path='/guest'>
-              <Products addToCart={addToCart} products={products} />
+              <Products
+                addToCart={addToCart}
+                products={products}
+                setView={setView}
+              />
             </Route>
           </Switch>
         </div>
@@ -349,6 +353,7 @@ const App = () => {
             </Route>
             <Route path='/'>
               <Products
+                auth={auth}
                 setView={setView}
                 addToCart={addToCart}
                 products={products}
