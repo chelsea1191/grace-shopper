@@ -28,24 +28,29 @@ const {
 	rateItem
 } = require("./userMethods");
 
-const getProducts = amount => {
-	let products = [];
-	for (let i = 0; i < amount; i++) {
-		let prodName = faker.commerce.productName();
-		let price = faker.commerce.price(0.99, 20.0, 2);
-		let text = faker.lorem.sentence(5);
-		let rating = faker.random.number({ min: 3, max: 5 });
-		let img = faker.image.imageUrl(300, 300, "animals", true);
-		let newProd = {
-			name: prodName,
-			price: price,
-			description: text,
-			rating: rating,
-			image: img
-		};
-		products.push(newProd);
-	}
-	return products;
+
+const getProducts = (amount) => {
+  let products = [];
+  for (let i = 0; i < amount; i++) {
+    let prodName = faker.commerce.productName();
+    let price = faker.commerce.price(0.99, 20.0, 2);
+    let text = faker.lorem.sentence(5);
+    let rating = faker.random.number({ min: 3, max: 5 });
+    let img = faker.image.imageUrl(300, 300, 'animals', true);
+    let color = faker.commerce.color();
+    let material = faker.commerce.productMaterial();
+    let newProd = {
+      name: prodName,
+      price: price,
+      description: text,
+      rating: rating,
+      image: img,
+      color: color,
+      material: material
+    };
+    products.push(newProd);
+  }
+  return products;
 };
 
 const sync = async () => {
@@ -82,7 +87,9 @@ const sync = async () => {
 			price DECIMAL NOT NULL,
 			description VARCHAR(255),
 			rating INT,
-			image VARCHAR(255),
+      image VARCHAR(255),
+      material VARCHAR(255),
+      color VARCHAR(50),
       CHECK (char_length(name) > 0)
     );
 
@@ -90,7 +97,7 @@ const sync = async () => {
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       "userId" UUID REFERENCES users(id) NOT NULL,
       status VARCHAR(10) DEFAULT 'CART',
-      total DECIMAL DEFAULT 0,
+      total DECIMAL(100, 2) DEFAULT 0,
       promo UUID REFERENCES promos(id) DEFAULT NULL,
       "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
@@ -117,59 +124,59 @@ const sync = async () => {
     INSERT INTO promos (code, description, multiplier, status) VALUES ('UNF40', 'take 40% off any purchase', '0.6', 'inactive');
   `;
 
-	await client.query(SQL);
+  await client.query(SQL);
 
-	const _users = {
-		lucy: {
-			username: "lucy",
-			password: "LUCY",
-			role: "ADMIN",
-			status: "active"
-		},
-		moe: {
-			username: "moe",
-			password: "MOE",
-			role: null,
-			status: "active"
-		},
-		curly: {
-			username: "larry",
-			password: "LARRY",
-			role: null,
-			status: "active"
-		}
-	};
+  const _users = {
+    lucy: {
+      username: 'lucy',
+      password: 'LUCY',
+      role: 'ADMIN',
+      status: 'active'
+    },
+    moe: {
+      username: 'moe',
+      password: 'MOE',
+      role: null,
+      status: 'active'
+    },
+    curly: {
+      username: 'larry',
+      password: 'LARRY',
+      role: null,
+      status: 'active'
+    }
+  };
 
-	const _products = getProducts(25);
+  const _products = getProducts(25);
 
-	const [lucy, moe] = await Promise.all(
-		Object.values(_users).map(user => users.create(user))
-	);
-	const [foo, bar, bazz] = await Promise.all(
-		Object.values(_products).map(product => products.create(product))
-	);
+  const [lucy, moe] = await Promise.all(
+    Object.values(_users).map((user) => users.create(user))
+  );
+  const [foo, bar, bazz] = await Promise.all(
+    Object.values(_products).map((product) => products.create(product))
+  );
 
-	const _orders = {
-		moe: {
-			userId: moe.id
-		},
-		lucy: {
-			userId: lucy.id
-		}
-	};
+  const _orders = {
+    moe: {
+      userId: moe.id
+    },
+    lucy: {
+      userId: lucy.id
+    }
+  };
 
-	const userMap = (await users.read()).reduce((acc, user) => {
-		acc[user.username] = user;
-		return acc;
-	}, {});
-	const productMap = (await products.read()).reduce((acc, product) => {
-		acc[product.name] = product;
-		return acc;
-	}, {});
-	return {
-		users: userMap,
-		products: productMap
-	};
+  const userMap = (await users.read()).reduce((acc, user) => {
+    acc[user.username] = user;
+    return acc;
+  }, {});
+  const productMap = (await products.read()).reduce((acc, product) => {
+    acc[product.name] = product;
+    return acc;
+  }, {});
+  return {
+    users: userMap,
+    products: productMap
+  };
 };
 
 const addAddress = async address => {
