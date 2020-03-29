@@ -104,7 +104,6 @@ const Cart = ({
             const product = products.find(
               product => product.id === lineItem.productId
             );
-            console.log('line item id is', lineItem.id);
             return (
               <li className="horizontal" key={lineItem.id}>
                 <img className="avatar" src={product.image}></img>
