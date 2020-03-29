@@ -51,6 +51,16 @@ const App = () => {
 		});
 	}, [auth]);
 
+<<<<<<< HEAD
+  useEffect(() => {
+    if (auth.id) {
+      const token = window.localStorage.getItem('token');
+      axios.get('/api/getLineItems', headers()).then(response => {
+        setLineItems(response.data);
+      });
+    }
+  }, [auth, lineItems]);
+=======
 	useEffect(() => {
 		if (auth.id) {
 			const token = window.localStorage.getItem("token");
@@ -59,6 +69,7 @@ const App = () => {
 			});
 		}
 	}, [auth]);
+>>>>>>> master
 
 	useEffect(() => {
 		axios.get("/api/getPromos").then(response => {
