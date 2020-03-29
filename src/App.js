@@ -56,7 +56,7 @@ const App = () => {
         setLineItems(response.data);
       });
     }
-  }, [auth]);
+  }, [auth, lineItems]);
 
   useEffect(() => {
     axios.get('/api/getPromos').then(response => {
