@@ -4,7 +4,8 @@ import verify from "./verify";
 
 const apiKey = "WS75-VRC1-NSQ3";
 
-export default function CreateUser() {
+export default function CreateUser({ auth, setAuth }) {
+	console.log(auth, setAuth);
 	const handleSubmit = async e => {
 		e.preventDefault();
 		let name = e.target[0].value;
@@ -23,9 +24,10 @@ export default function CreateUser() {
 			state: state,
 			zip: zip
 		};
-		await axios
-			.post("/api/createUser", newUser)
-			.then(response => (newUser.id = response.data.id));
+		await axios.post("/api/createUser", newUser).then(response => {
+			newUser.id = response.data.id;
+			setAuth(newUser);
+		});
 		await axios
 			.get(
 				`https://trial.serviceobjects.com/AD/api.svc/FindAddressJson?Address1=${newUser.address}&City=${newUser.city}&State=${newUser.state}&PostalCode=${newUser.zip}&LicenseKey=${apiKey}`
