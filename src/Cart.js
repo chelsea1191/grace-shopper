@@ -176,10 +176,10 @@ const Cart = ({
         </p>
       )}
       <form onSubmit={handleAddress}>
-        <input placeholder='Address' />
-        <input placeholder='City' />
-        <input placeholder='State' />
-        <input placeholder='Zip' />
+        <input placeholder='Address' value={addresses[0].address} />
+        <input placeholder='City' value={addresses[0].city} />
+        <input placeholder='State' value={addresses[0].state} />
+        <input placeholder='Zip' value={addresses[0].zip} />
         <button type='submit' className='btn btn-secondary'>
           Create a New Address
         </button>
