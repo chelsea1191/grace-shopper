@@ -25,6 +25,7 @@ const Orders = ({ lineItems, setLineItems, orders, products }) => {
           return (
             <li key={order.id}>
               <div>OrderID: {order.id.slice(0, 4)}</div>
+              <p>Shipping Address: {order.address}</p>
               <ul>
                 {_lineItems.map((lineItem) => {
                   const product = products.find(

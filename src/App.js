@@ -17,8 +17,8 @@ const headers = () => {
   const token = window.localStorage.getItem('token');
   return {
     headers: {
-      authorization: token,
-    },
+      authorization: token
+    }
   };
 };
 
@@ -40,40 +40,51 @@ const App = () => {
   const [total, setTotal] = useState('');
   const [tax, setTax] = useState('');
   const [productView, setView] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/products').then(response => setProducts(response.data));
+    axios.get('/api/products').then((response) => setProducts(response.data));
   }, [auth]);
 
   useEffect(() => {
-    axios.get('/api/getAllUsers').then(response => {
+    axios.get('/api/getAllUsers').then((response) => {
       setUsers(response.data);
     });
   }, [auth]);
 
   useEffect(() => {
     if (auth.id) {
+      const userId = { userId: auth.id };
+      axios.post('/api/getAddresses', userId).then((response) => {
+        setAddresses(response.data.rows);
+      });
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    if (auth.id) {
       const token = window.localStorage.getItem('token');
-      axios.get('/api/getLineItems', headers()).then(response => {
+      axios.get('/api/getLineItems', headers()).then((response) => {
         setLineItems(response.data);
       });
     }
   }, [auth]);
 
   useEffect(() => {
-    axios.get('/api/getPromos').then(response => {
+    axios.get('/api/getPromos').then((response) => {
       setAllPromos(response.data);
     });
   }, [auth]);
 
   useEffect(() => {
     if (auth.id) {
-      axios.get('/api/getCart', headers()).then(response => {
+      axios.get('/api/getCart', headers()).then((response) => {
         setCart(response.data);
         if (response.data.promo === null || response.data.promo === undefined) {
         } else {
           let filtered = allPromos.filter(
-            each => each.id === response.data.promo
+            (each) => each.id === response.data.promo
           );
           setMultiplier(filtered[0].multiplier);
           setPromoDescription(filtered[0].description);
@@ -85,13 +96,13 @@ const App = () => {
 
   useEffect(() => {
     if (auth.id) {
-      axios.get('/api/getOrders', headers()).then(response => {
+      axios.get('/api/getOrders', headers()).then((response) => {
         setOrders(response.data);
       });
     }
   }, [auth]);
 
-  const login = async credentials => {
+  const login = async (credentials) => {
     const token = (await axios.post('/api/auth', credentials)).data.token;
     window.localStorage.setItem('token', token);
     exchangeTokenForAuth();
@@ -130,13 +141,13 @@ const App = () => {
   const createOrder = () => {
     const token = window.localStorage.getItem('token');
     axios
-      .post('/api/createOrder', { subtotal }, headers())
-      .then(response => {
+      .post('/api/createOrder', { subtotal, selectedAddress }, headers())
+      .then((response) => {
         setOrders([response.data, ...orders]);
         const token = window.localStorage.getItem('token');
         return axios.get('/api/getCart', headers());
       })
-      .then(response => {
+      .then((response) => {
         setCart(response.data);
       });
     setMultiplier(null);
@@ -144,14 +155,14 @@ const App = () => {
     setSubtotal(0);
   };
 
-  const addToCart = productId => {
-    axios.post('/api/addToCart', { productId }, headers()).then(response => {
+  const addToCart = (productId) => {
+    axios.post('/api/addToCart', { productId }, headers()).then((response) => {
       const lineItem = response.data;
-      const found = lineItems.find(_lineItem => _lineItem.id === lineItem.id);
+      const found = lineItems.find((_lineItem) => _lineItem.id === lineItem.id);
       if (!found) {
         setLineItems([...lineItems, lineItem]);
       } else {
-        const updated = lineItems.map(_lineItem =>
+        const updated = lineItems.map((_lineItem) =>
           _lineItem.id === lineItem.id ? lineItem : _lineItem
         );
         setLineItems(updated);
@@ -159,16 +170,18 @@ const App = () => {
     });
   };
 
-  const removeFromCart = lineItemId => {
+  const removeFromCart = (lineItemId) => {
     axios.delete(`/api/removeFromCart/${lineItemId}`, headers()).then(() => {
-      setLineItems(lineItems.filter(_lineItem => _lineItem.id !== lineItemId));
+      setLineItems(
+        lineItems.filter((_lineItem) => _lineItem.id !== lineItemId)
+      );
     });
   };
 
   const totalItemsInCart = () => {
     const quantityArray = lineItems
-      .filter(lineItem => lineItem.orderId === cart.id)
-      .map(item => item.quantity);
+      .filter((lineItem) => lineItem.orderId === cart.id)
+      .map((item) => item.quantity);
     return quantityArray.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       0
@@ -178,10 +191,10 @@ const App = () => {
   const getSubtotal = () => {
     let runningTotal = 0;
     lineItems
-      .filter(lineItem => lineItem.orderId === cart.id)
-      .map(lineItem => {
+      .filter((lineItem) => lineItem.orderId === cart.id)
+      .map((lineItem) => {
         let product = products.find(
-          product => product.id === lineItem.productId
+          (product) => product.id === lineItem.productId
         );
         if (multiplier == null || multiplier == undefined) {
           runningTotal += product.price * lineItem.quantity;
@@ -198,15 +211,15 @@ const App = () => {
     }
   };
 
-  const removePromo = cartId => {
-    axios.post('/api/removePromo', { cartId }).then(response => {
+  const removePromo = (cartId) => {
+    axios.post('/api/removePromo', { cartId }).then((response) => {
       setMultiplier(null);
       setPromoDescription([]);
       setIsSubmitted(false);
     });
   };
 
-  const errrorHandler = error => {
+  const errrorHandler = (error) => {
     if (error.status === 401) {
       console.log('User is not authorized for this function.');
     } else if (error.status === 404) {
@@ -225,31 +238,31 @@ const App = () => {
       <Router>
         <div>
           <h1>Grace Shopper</h1>
-          <nav className="navbar navbar-expand-lg navbar-light">
-            <li className="nav-link active">
-              <Link className="link" to="/login">
+          <nav className='navbar navbar-expand-lg navbar-light'>
+            <li className='nav-link active'>
+              <Link className='link' to='/login'>
                 Login
               </Link>
             </li>
-            <li className="nav-link active">
-              <Link className="link" to="/register">
+            <li className='nav-link active'>
+              <Link className='link' to='/register'>
                 Register
               </Link>
             </li>
-            <li className="nav-link active">
-              <Link className="link" to="/guest">
+            <li className='nav-link active'>
+              <Link className='link' to='/guest'>
                 Browse Products
               </Link>
             </li>
           </nav>
           <Switch>
-            <Route path="/login">
+            <Route path='/login'>
               <Login login={login} />
             </Route>
-            <Route path="/register">
+            <Route path='/register'>
               <CreateUser auth={auth} setAuth={setAuth} />
             </Route>
-            <Route path="/guest">
+            <Route path='/guest'>
               <Products
                 addToCart={addToCart}
                 products={products}
@@ -265,53 +278,52 @@ const App = () => {
       <Router>
         <div>
           <h1>Grace Shopper</h1>
-          <nav className="navbar navbar-expand-lg navbar-light">
-            <li className="nav-link active">
-              <Link className="link" to="/">
+          <nav className='navbar navbar-expand-lg navbar-light'>
+            <li className='nav-link active'>
+              <Link className='link' to='/'>
                 Products
               </Link>
             </li>
             <li>
-              <Link to="/cart">
-                <span className="fa-layers fa-fw fa-3x">
+              <Link to='/cart'>
+                <span className='fa-layers fa-fw fa-3x'>
                   <FontAwesomeIcon icon={faShoppingCart} />
-                  <span className="fa-layers-counter">
+                  <span className='fa-layers-counter'>
                     {totalItemsInCart()}
                   </span>
                 </span>
               </Link>
             </li>
-            <li className="nav-link">
-              <Link className="link" to="/orders">
+            <li className='nav-link'>
+              <Link className='link' to='/orders'>
                 My Orders
               </Link>
             </li>
             {isAdmin === true && (
-              <li className="nav-link">
-                <Link className="link" to="/adminpromos">
+              <li className='nav-link'>
+                <Link className='link' to='/adminpromos'>
                   Edit Promos
                 </Link>
               </li>
             )}
             {isAdmin === true && (
-              <li className="nav-link">
-                <Link className="link" to="/adminusers">
+              <li className='nav-link'>
+                <Link className='link' to='/adminusers'>
                   Edit Users
                 </Link>
               </li>
             )}
-            <li className="nav-link">
+            <li className='nav-link'>
               <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={logout}
-              >
+                type='button'
+                className='btn btn-secondary'
+                onClick={logout}>
                 Logout {auth.username}
               </button>
             </li>
           </nav>
           <Switch>
-            <Route path="/orders">
+            <Route path='/orders'>
               <Orders
                 lineItems={lineItems}
                 products={products}
@@ -320,15 +332,20 @@ const App = () => {
               />
             </Route>
 
-            <Route path="/adminpromos">
+            <Route path='/adminpromos'>
               <AdminPromos allPromos={allPromos} setAllPromos={setAllPromos} />
             </Route>
 
-            <Route path="/adminusers">
+            <Route path='/adminusers'>
               <AdminUsers users={users} setUsers={setUsers} />
             </Route>
-            <Route path="/cart">
+            <Route path='/cart'>
               <Cart
+                addresses={addresses}
+                setAddresses={setAddresses}
+                selectedAddress={selectedAddress}
+                setSelectedAddress={setSelectedAddress}
+                auth={auth}
                 promo={promo}
                 promoDescription={promoDescription}
                 allPromos={allPromos}
@@ -351,7 +368,7 @@ const App = () => {
             <Route exact path={`/products/${productView.id}`}>
               <ProductPage product={productView} addToCart={addToCart} />
             </Route>
-            <Route path="/">
+            <Route path='/'>
               <Products
                 auth={auth}
                 setView={setView}
