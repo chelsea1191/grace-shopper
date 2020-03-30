@@ -17,6 +17,10 @@ const users = {
         status
       ])
     ).rows[0];
+  },
+  update: async ({ userId, password }) => {
+    const SQL = `UPDATE users SET password=$2 WHERE id=$1 returning *`;
+    return (await client.query(SQL, [userId, await hash(password)])).rows[0];
   }
 };
 

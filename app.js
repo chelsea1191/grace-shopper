@@ -161,6 +161,14 @@ app.get('/api/products', (req, res, next) => {
     .catch(next);
 });
 
+// update password
+app.put('/api/auth/:id', (req, res, next) => {
+  db.models.users
+    .update(req.body)
+    .then((response) => res.send(response))
+    .catch(next);
+});
+
 app.post('/api/changePromoStatus', (req, res, next) => {
   db.changePromoStatus(req.body.promoId, req.body.selection)
     .then((response) => res.send(response))
