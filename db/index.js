@@ -74,6 +74,8 @@ const sync = async () => {
     CREATE TABLE users(
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       username VARCHAR(100) NOT NULL UNIQUE,
+      firstname VARCHAR(100),
+      lastname VARCHAR(100),
       password VARCHAR(100) NOT NULL,
       role VARCHAR(20) DEFAULT 'USER',
       status VARCHAR,
@@ -130,18 +132,24 @@ const sync = async () => {
   const _users = {
     lucy: {
       username: 'lucy',
+      firstname: 'Lucy',
+      lastname: 'Jones',
       password: 'LUCY',
       role: 'ADMIN',
       status: 'active'
     },
     moe: {
       username: 'moe',
+      firstname: 'Moe',
+      lastname: 'Butler',
       password: 'MOE',
       role: null,
       status: 'active'
     },
     curly: {
       username: 'larry',
+      firstname: 'Larry',
+      lastname: 'Johnson',
       password: 'LARRY',
       role: null,
       status: 'active'
