@@ -18,8 +18,8 @@ const headers = () => {
   const token = window.localStorage.getItem('token');
   return {
     headers: {
-      authorization: token
-    }
+      authorization: token,
+    },
   };
 };
 
@@ -45,11 +45,11 @@ const App = () => {
   const [selectedAddress, setSelectedAddress] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/products').then((response) => setProducts(response.data));
+    axios.get('/api/products').then(response => setProducts(response.data));
   }, [auth]);
 
   useEffect(() => {
-    axios.get('/api/getAllUsers').then((response) => {
+    axios.get('/api/getAllUsers').then(response => {
       setUsers(response.data);
     });
   }, [auth]);
@@ -57,7 +57,7 @@ const App = () => {
   useEffect(() => {
     if (auth.id) {
       const userId = { userId: auth.id };
-      axios.post('/api/getAddresses', userId).then((response) => {
+      axios.post('/api/getAddresses', userId).then(response => {
         if (response.data.rows.length === 0) {
           //if they dont have an address on file
           axios
@@ -66,9 +66,9 @@ const App = () => {
               address: '1 UNF Dr',
               city: 'Jacksonville',
               state: 'Florida',
-              zip: '32256'
+              zip: '32256',
             })
-            .then((response) => setAddresses([response.data]));
+            .then(response => setAddresses([response.data]));
         }
         setAddresses(response.data.rows);
       });
@@ -78,26 +78,26 @@ const App = () => {
   useEffect(() => {
     if (auth.id) {
       const token = window.localStorage.getItem('token');
-      axios.get('/api/getLineItems', headers()).then((response) => {
+      axios.get('/api/getLineItems', headers()).then(response => {
         setLineItems(response.data);
       });
     }
   }, [auth]);
 
   useEffect(() => {
-    axios.get('/api/getPromos').then((response) => {
+    axios.get('/api/getPromos').then(response => {
       setAllPromos(response.data);
     });
   }, [auth]);
 
   useEffect(() => {
     if (auth.id) {
-      axios.get('/api/getCart', headers()).then((response) => {
+      axios.get('/api/getCart', headers()).then(response => {
         setCart(response.data);
         if (response.data.promo === null || response.data.promo === undefined) {
         } else {
           let filtered = allPromos.filter(
-            (each) => each.id === response.data.promo
+            each => each.id === response.data.promo
           );
           setMultiplier(filtered[0].multiplier);
           setPromoDescription(filtered[0].description);
@@ -109,13 +109,13 @@ const App = () => {
 
   useEffect(() => {
     if (auth.id) {
-      axios.get('/api/getOrders', headers()).then((response) => {
+      axios.get('/api/getOrders', headers()).then(response => {
         setOrders(response.data);
       });
     }
   }, [auth]);
 
-  const login = async (credentials) => {
+  const login = async credentials => {
     const token = (await axios.post('/api/auth', credentials)).data.token;
     window.localStorage.setItem('token', token);
     exchangeTokenForAuth();
@@ -158,12 +158,12 @@ const App = () => {
     } else {
       axios
         .post('/api/createOrder', { subtotal, selectedAddress }, headers())
-        .then((response) => {
+        .then(response => {
           setOrders([response.data, ...orders]);
           const token = window.localStorage.getItem('token');
           return axios.get('/api/getCart', headers());
         })
-        .then((response) => {
+        .then(response => {
           setCart(response.data);
         });
       setMultiplier(null);
@@ -173,14 +173,14 @@ const App = () => {
     }
   };
 
-  const addToCart = (productId) => {
-    axios.post('/api/addToCart', { productId }, headers()).then((response) => {
+  const addToCart = productId => {
+    axios.post('/api/addToCart', { productId }, headers()).then(response => {
       const lineItem = response.data;
-      const found = lineItems.find((_lineItem) => _lineItem.id === lineItem.id);
+      const found = lineItems.find(_lineItem => _lineItem.id === lineItem.id);
       if (!found) {
         setLineItems([...lineItems, lineItem]);
       } else {
-        const updated = lineItems.map((_lineItem) =>
+        const updated = lineItems.map(_lineItem =>
           _lineItem.id === lineItem.id ? lineItem : _lineItem
         );
         setLineItems(updated);
@@ -188,22 +188,20 @@ const App = () => {
     });
   };
 
-  const removeFromCart = (lineItemId) => {
+  const removeFromCart = lineItemId => {
     axios.delete(`/api/removeFromCart/${lineItemId}`, headers()).then(() => {
-      setLineItems(
-        lineItems.filter((_lineItem) => _lineItem.id !== lineItemId)
-      );
+      setLineItems(lineItems.filter(_lineItem => _lineItem.id !== lineItemId));
     });
   };
 
-  const changePassword = (newCredentials) => {
+  const changePassword = newCredentials => {
     axios.put(`/api/auth/${auth.id}`, newCredentials);
   };
 
   const totalItemsInCart = () => {
     const quantityArray = lineItems
-      .filter((lineItem) => lineItem.orderId === cart.id)
-      .map((item) => item.quantity);
+      .filter(lineItem => lineItem.orderId === cart.id)
+      .map(item => item.quantity);
     return quantityArray.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       0
@@ -213,10 +211,10 @@ const App = () => {
   const getSubtotal = () => {
     let runningTotal = 0;
     lineItems
-      .filter((lineItem) => lineItem.orderId === cart.id)
-      .map((lineItem) => {
+      .filter(lineItem => lineItem.orderId === cart.id)
+      .map(lineItem => {
         let product = products.find(
-          (product) => product.id === lineItem.productId
+          product => product.id === lineItem.productId
         );
         if (multiplier == null || multiplier == undefined) {
           runningTotal += product.price * lineItem.quantity;
@@ -233,15 +231,15 @@ const App = () => {
     }
   };
 
-  const removePromo = (cartId) => {
-    axios.post('/api/removePromo', { cartId }).then((response) => {
+  const removePromo = cartId => {
+    axios.post('/api/removePromo', { cartId }).then(response => {
       setMultiplier(null);
       setPromoDescription([]);
       setIsSubmitted(false);
     });
   };
 
-  const errrorHandler = (error) => {
+  const errrorHandler = error => {
     if (error.status === 401) {
       console.log('User is not authorized for this function.');
     } else if (error.status === 404) {
@@ -264,18 +262,18 @@ const App = () => {
     } else {
       const newLineItem = { ...lineItem, quantity: num };
       await axios.put(`/api/updateCart/${newLineItem.id}`, newLineItem).then(
-        axios.get('/api/getLineItems', headers()).then((response) => {
+        axios.get('/api/getLineItems', headers()).then(response => {
           setLineItems(response.data);
         })
       );
     }
   };
 
-  const incrementQuantity = (lineItem) => {
+  const incrementQuantity = lineItem => {
     const plusQuantity = lineItem.quantity + 1;
     setNewQuantity(lineItem, plusQuantity);
   };
-  const decrementQuantity = (lineItem) => {
+  const decrementQuantity = lineItem => {
     const minusQuantity = lineItem.quantity - 1;
     setNewQuantity(lineItem, minusQuantity);
   };
@@ -286,31 +284,31 @@ const App = () => {
     return (
       <Router>
         <div>
-          <nav className='navbar navbar-expand-lg navbar-light'>
-            <h1 className='link navbar-brand mb-0 h1' to='/'>
-              Grace Shopper
-            </h1>
-            <ul className='navbar-nav mr-auto'>
-              <li className='nav-item active'>
-                <Link className='link nav-link' to='/login'>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <Link className="link navbar-brand mb-0 h1" to="/">
+              <h1>Grace Shopper</h1>
+            </Link>
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/login">
                   Login
                 </Link>
               </li>
-              <li className='nav-item active'>
-                <Link className='link nav-link' to='/register'>
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/register">
                   Register
                 </Link>
               </li>
             </ul>
           </nav>
           <Switch>
-            <Route path='/login'>
+            <Route path="/login">
               <Login login={login} />
             </Route>
-            <Route path='/register'>
+            <Route path="/register">
               <CreateUser auth={auth} setAuth={setAuth} />
             </Route>
-            <Route path='/guest'>
+            <Route path="/guest">
               <Products
                 addToCart={addToCart}
                 products={products}
@@ -330,55 +328,56 @@ const App = () => {
     return (
       <Router>
         <div>
-          <nav className='navbar navbar-expand-lg navbar-light'>
-            <Link className='link navbar-brand mb-0 h1' to='/'>
+          <nav className="navbar navbar-expand-lg navbar-light">
+            <Link className="link navbar-brand mb-0 h1" to="/">
               <h1> Grace Shopper </h1>
             </Link>
-            <ul className='navbar-nav mr-auto'>
-              <li className='nav-item active'>
-                <Link className='link nav-link' to='/'>
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/">
                   Shop
                 </Link>
               </li>
 
-              <li className='nav-item active'>
-                <Link className='link nav-link' to='/orders'>
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/orders">
                   My Orders
                 </Link>
               </li>
               {isAdmin === true && (
-                <li className='nav-item'>
-                  <Link className='link nav-link' to='/adminpromos'>
+                <li className="nav-item">
+                  <Link className="link nav-link" to="/adminpromos">
                     Edit Promos
                   </Link>
                 </li>
               )}
               {isAdmin === true && (
-                <li className='nav-item'>
-                  <Link className='link nav-link' to='/adminusers'>
+                <li className="nav-item">
+                  <Link className="link nav-link" to="/adminusers">
                     Edit Users
                   </Link>
                 </li>
               )}
 
-              <li className='nav-item active'>
-                <Link className='link nav-link' to='/userprofile'>
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/userprofile">
                   User Profile
                 </Link>
               </li>
-              <li className='nav-link'>
+              <li className="nav-link">
                 <button
-                  type='button'
-                  className='btn btn-secondary'
-                  onClick={logout}>
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={logout}
+                >
                   Logout {auth.firstname} {auth.lastname}
                 </button>
               </li>
               <li>
-                <Link to='/cart'>
-                  <span className='fa-layers fa-fw fa-3x'>
+                <Link to="/cart">
+                  <span className="fa-layers fa-fw fa-3x">
                     <FontAwesomeIcon icon={faShoppingCart} />
-                    <span className='fa-layers-counter'>
+                    <span className="fa-layers-counter">
                       {totalItemsInCart()}
                     </span>
                   </span>
@@ -387,7 +386,7 @@ const App = () => {
             </ul>
           </nav>
           <Switch>
-            <Route path='/orders'>
+            <Route path="/orders">
               <Orders
                 lineItems={lineItems}
                 products={products}
@@ -397,18 +396,18 @@ const App = () => {
               />
             </Route>
 
-            <Route path='/adminpromos'>
+            <Route path="/adminpromos">
               <AdminPromos allPromos={allPromos} setAllPromos={setAllPromos} />
             </Route>
 
-            <Route path='/adminusers'>
+            <Route path="/adminusers">
               <AdminUsers users={users} setUsers={setUsers} />
             </Route>
 
-            <Route path='/userprofile'>
+            <Route path="/userprofile">
               <UserProfile auth={auth} changePassword={changePassword} />
             </Route>
-            <Route path='/cart'>
+            <Route path="/cart">
               <Cart
                 addresses={addresses}
                 setAddresses={setAddresses}
@@ -448,9 +447,10 @@ const App = () => {
                 changeQuantity={changeQuantity}
                 incrementQuantity={incrementQuantity}
                 setNewQuantity={setNewQuantity}
+                cart={cart}
               />
             </Route>
-            <Route path='/'>
+            <Route path="/">
               <Products
                 auth={auth}
                 setView={setView}
