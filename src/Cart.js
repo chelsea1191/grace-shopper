@@ -20,6 +20,10 @@ const Cart = ({
   removePromo,
   headers,
   total,
+  decrementQuantity,
+  changeQuantity,
+  incrementQuantity,
+  setNewQuantity,
 }) => {
   let cartId = cart.id;
   let promoId;
@@ -49,24 +53,6 @@ const Cart = ({
     await verify(addressRaw, auth.id);
   };
 
-  const changeQuantity = (lineItem, e) => {
-    const newQuantity = Number(e.target.value);
-    setNewQuantity(lineItem, newQuantity);
-  };
-
-  const setNewQuantity = async (lineItem, num) => {
-    if (num === 0) {
-      removeFromCart(lineItem.id);
-    } else {
-      const newLineItem = { ...lineItem, quantity: num };
-      await axios.put(`/api/updateCart/${newLineItem.id}`, newLineItem).then(
-        axios.get('/api/getLineItems', headers()).then(response => {
-          setLineItems(response.data);
-        })
-      );
-    }
-  };
-
   const getTax = () => {
     if (subtotal * 0.93 - 5.99 <= 0) {
       return 0;
@@ -74,15 +60,6 @@ const Cart = ({
       let tax = subtotal * 0.07;
       return tax;
     }
-  };
-
-  const incrementQuantity = lineItem => {
-    const plusQuantity = lineItem.quantity + 1;
-    setNewQuantity(lineItem, plusQuantity);
-  };
-  const decrementQuantity = lineItem => {
-    const minusQuantity = lineItem.quantity - 1;
-    setNewQuantity(lineItem, minusQuantity);
   };
 
   return (

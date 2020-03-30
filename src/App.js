@@ -218,14 +218,41 @@ const App = () => {
     }
   };
 
+  const changeQuantity = (lineItem, e) => {
+    const newQuantity = Number(e.target.value);
+    setNewQuantity(lineItem, newQuantity);
+  };
+
+  const setNewQuantity = async (lineItem, num) => {
+    if (num === 0) {
+      removeFromCart(lineItem.id);
+    } else {
+      const newLineItem = { ...lineItem, quantity: num };
+      await axios.put(`/api/updateCart/${newLineItem.id}`, newLineItem).then(
+        axios.get('/api/getLineItems', headers()).then(response => {
+          setLineItems(response.data);
+        })
+      );
+    }
+  };
+
+  const incrementQuantity = lineItem => {
+    const plusQuantity = lineItem.quantity + 1;
+    setNewQuantity(lineItem, plusQuantity);
+  };
+  const decrementQuantity = lineItem => {
+    const minusQuantity = lineItem.quantity - 1;
+    setNewQuantity(lineItem, minusQuantity);
+  };
+
   const { view } = params;
 
   if (!auth.id) {
     return (
       <Router>
         <div>
-          <h1>Grace Shopper</h1>
           <nav className="navbar navbar-expand-lg navbar-light">
+            <h1>Grace Shopper</h1>
             <li className="nav-link active">
               <Link className="link" to="/login">
                 Login
@@ -264,51 +291,58 @@ const App = () => {
     return (
       <Router>
         <div>
-          <h1>Grace Shopper</h1>
           <nav className="navbar navbar-expand-lg navbar-light">
-            <li className="nav-link active">
-              <Link className="link" to="/">
-                Products
-              </Link>
-            </li>
-            <li>
-              <Link to="/cart">
-                <span className="fa-layers fa-fw fa-3x">
-                  <FontAwesomeIcon icon={faShoppingCart} />
-                  <span className="fa-layers-counter">
-                    {totalItemsInCart()}
+            <Link className="link navbar-brand mb-0 h1" to="/">
+              <h1> Grace Shopper </h1>
+            </Link>
+
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/">
+                  Shop
+                </Link>
+              </li>
+
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/orders">
+                  My Orders
+                </Link>
+              </li>
+              {isAdmin === true && (
+                <li className="nav-item">
+                  <Link className="link nav-link" to="/adminpromos">
+                    Edit Promos
+                  </Link>
+                </li>
+              )}
+              {isAdmin === true && (
+                <li className="nav-item">
+                  <Link className="link nav-link" to="/adminusers">
+                    Edit Users
+                  </Link>
+                </li>
+              )}
+              <li className="nav-item" id="button-container">
+                <button
+                  type="button"
+                  id="logout-button"
+                  className="btn btn-secondary"
+                  onClick={logout}
+                >
+                  Logout {auth.username}
+                </button>
+              </li>
+              <li>
+                <Link to="/cart">
+                  <span className="fa-layers fa-fw fa-3x">
+                    <FontAwesomeIcon icon={faShoppingCart} />
+                    <span className="fa-layers-counter">
+                      {totalItemsInCart()}
+                    </span>
                   </span>
-                </span>
-              </Link>
-            </li>
-            <li className="nav-link">
-              <Link className="link" to="/orders">
-                My Orders
-              </Link>
-            </li>
-            {isAdmin === true && (
-              <li className="nav-link">
-                <Link className="link" to="/adminpromos">
-                  Edit Promos
                 </Link>
               </li>
-            )}
-            {isAdmin === true && (
-              <li className="nav-link">
-                <Link className="link" to="/adminusers">
-                  Edit Users
-                </Link>
-              </li>
-            )}
-            <li className="nav-link">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={logout}
-              >
-                Logout {auth.username}
-              </button>
-            </li>
+            </ul>
           </nav>
           <Switch>
             <Route path="/orders">
@@ -346,10 +380,22 @@ const App = () => {
                 removePromo={removePromo}
                 headers={headers}
                 total={total}
+                decrementQuantity={decrementQuantity}
+                changeQuantity={changeQuantity}
+                incrementQuantity={incrementQuantity}
+                setNewQuantity={setNewQuantity}
               />
             </Route>
             <Route exact path={`/products/${productView.id}`}>
-              <ProductPage product={productView} addToCart={addToCart} />
+              <ProductPage
+                product={productView}
+                addToCart={addToCart}
+                lineItems={lineItems}
+                decrementQuantity={decrementQuantity}
+                changeQuantity={changeQuantity}
+                incrementQuantity={incrementQuantity}
+                setNewQuantity={setNewQuantity}
+              />
             </Route>
             <Route path="/">
               <Products

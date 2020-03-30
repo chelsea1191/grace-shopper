@@ -9,20 +9,14 @@ const ProductPage = ({
   changeQuantity,
   incrementQuantity,
   lineItems,
+  setNewQuantity,
 }) => {
   // make quantity field & buttons appear if item is in cart
   // need a toggle so that if user's cart has product with this product id,
   // the quantity component will be rendered
 
-  // quantity component needs to take in a lineItem which we dont have here on
-  // the Product Page
+  console.log(lineItems);
 
-  // Need to find the product in the user's cart and get corresponding line item
-
-  const isProductInCart = () => {
-    console.log(lineItems);
-  };
-  // isProductInCart();
   return (
     <div>
       <img src={product.image} />
@@ -41,12 +35,14 @@ const ProductPage = ({
       >
         Add to Cart
       </button>
-      {/* <Quantity
+      <Quantity
         decrementQuantity={decrementQuantity}
-        lineItem={lineItem}
         changeQuantity={changeQuantity}
         incrementQuantity={incrementQuantity}
-      /> */}
+        product={product}
+        lineItems={lineItems}
+        setNewQuantity={setNewQuantity}
+      />
     </div>
   );
 };
