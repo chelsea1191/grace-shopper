@@ -33,18 +33,22 @@ const getPromo = async (promo) => {
   ).rows[0];
 };
 
-const createOrder = async (userId, total) => {
+const createOrder = async (userId, input) => {
   //simply changes order status from cart to order and updates total
   const cart = await getCart(userId);
   cart.status = 'ORDER';
   await client.query(`UPDATE orders SET total=$1 WHERE id=$2 returning *`, [
-    total.subtotal,
-    cart.id,
+    input.subtotal,
+    cart.id
+  ]);
+  await client.query(`UPDATE orders SET address=$1 WHERE id=$2 returning *`, [
+    input.selectedAddress,
+    cart.id
   ]);
   return (
     await client.query(`UPDATE orders SET status=$1 WHERE id=$2 returning *`, [
       'ORDER',
-      cart.id,
+      cart.id
     ])
   ).rows[0];
 };
@@ -123,7 +127,7 @@ const getLineItems = async (userId) => {
 const applyPromo = async (cartId, promoId) => {
   await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
     cartId,
-    promoId,
+    promoId
   ]);
 };
 
@@ -150,7 +154,7 @@ const updateLineItems = async (lineItemId, lineItemQuantity) => {
 const removePromo = async (cartId) => {
   await client.query(`UPDATE orders SET promo=$2 WHERE id=$1 returning *`, [
     cartId,
-    null,
+    null
   ]);
 };
 
@@ -159,6 +163,14 @@ const rateItem = async (rating, itemId, orderId) => {
     `UPDATE "lineItems" SET rating=$1 WHERE id=$2 AND "orderId"=$3 returning *`,
     [rating, itemId, orderId]
   );
+};
+
+const getAddresses = async (userId) => {
+  const response = client.query(
+    `SELECT * from addresses WHERE "customerId"=$1`,
+    [userId]
+  );
+  return await response;
 };
 
 module.exports = {
@@ -174,4 +186,5 @@ module.exports = {
   updateLineItems,
   removePromo,
   rateItem,
+  getAddresses
 };

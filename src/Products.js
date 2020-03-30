@@ -3,18 +3,28 @@ import Rating from './Rating';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 const Products = ({ auth, products, addToCart, setView }) => {
+  let authIsNull = false;
+  if (auth === undefined || auth === null) {
+    authIsNull = true;
+  }
+
   return (
     <div>
       <div className="container-fluid">
         {products.map(product => {
           return (
             <div className="wrapper" key={product.id}>
-              <Link
-                to={`/products/${product.id}`}
-                onClick={el => setView(product)}
-              >
+              {authIsNull === false && (
+                <Link
+                  to={`/products/${product.id}`}
+                  onClick={el => setView(product)}
+                >
+                  <img className="card-img-top" src={product.image}></img>
+                </Link>
+              )}
+              {authIsNull && (
                 <img className="card-img-top" src={product.image}></img>
-              </Link>
+              )}
               <div className="card-body">
                 <Rating rating={product.rating} />
                 <h5 className="card-title">{product.name}</h5>

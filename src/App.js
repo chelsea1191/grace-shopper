@@ -40,6 +40,8 @@ const App = () => {
   const [total, setTotal] = useState('');
   const [tax, setTax] = useState('');
   const [productView, setView] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState([]);
 
   useEffect(() => {
     axios.get('/api/products').then(response => setProducts(response.data));
@@ -49,6 +51,15 @@ const App = () => {
     axios.get('/api/getAllUsers').then(response => {
       setUsers(response.data);
     });
+  }, [auth]);
+
+  useEffect(() => {
+    if (auth.id) {
+      const userId = { userId: auth.id };
+      axios.post('/api/getAddresses', userId).then(response => {
+        setAddresses(response.data.rows);
+      });
+    }
   }, [auth]);
 
   useEffect(() => {
@@ -130,7 +141,7 @@ const App = () => {
   const createOrder = () => {
     const token = window.localStorage.getItem('token');
     axios
-      .post('/api/createOrder', { subtotal }, headers())
+      .post('/api/createOrder', { subtotal, selectedAddress }, headers())
       .then(response => {
         setOrders([response.data, ...orders]);
         const token = window.localStorage.getItem('token');
@@ -363,6 +374,11 @@ const App = () => {
             </Route>
             <Route path="/cart">
               <Cart
+                addresses={addresses}
+                setAddresses={setAddresses}
+                selectedAddress={selectedAddress}
+                setSelectedAddress={setSelectedAddress}
+                auth={auth}
                 promo={promo}
                 promoDescription={promoDescription}
                 allPromos={allPromos}

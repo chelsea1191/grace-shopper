@@ -1,33 +1,33 @@
-const client = require("./client");
+const client = require('./client');
 
-const { authenticate, compare, findUserFromToken, hash } = require("./auth");
+const { authenticate, compare, findUserFromToken, hash } = require('./auth');
 
-const models = ({ products, users, orders, lineItems } = require("./models"));
+const models = ({ products, users, orders, lineItems } = require('./models'));
 
-const faker = require("faker");
-
-const {
-	changePromoStatus,
-	getAllUsers,
-	addNewPromo,
-	changeUserStatus
-} = require("./adminMethods");
+const faker = require('faker');
 
 const {
-	getCart,
-	getOrders,
-	addToCart,
-	getPromo,
-	removeFromCart,
-	createOrder,
-	getLineItems,
-	applyPromo,
-	getAllPromos,
-	updateLineItems,
-	removePromo,
-	rateItem
-} = require("./userMethods");
+  changePromoStatus,
+  getAllUsers,
+  addNewPromo,
+  changeUserStatus
+} = require('./adminMethods');
 
+const {
+  getCart,
+  getOrders,
+  addToCart,
+  getPromo,
+  removeFromCart,
+  createOrder,
+  getLineItems,
+  applyPromo,
+  getAllPromos,
+  updateLineItems,
+  removePromo,
+  rateItem,
+  getAddresses
+} = require('./userMethods');
 
 const getProducts = (amount) => {
   let products = [];
@@ -54,7 +54,7 @@ const getProducts = (amount) => {
 };
 
 const sync = async () => {
-	const SQL = `
+  const SQL = `
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     DROP TABLE IF EXISTS addresses;
     DROP TABLE IF EXISTS "lineItems";
@@ -99,6 +99,7 @@ const sync = async () => {
       status VARCHAR(10) DEFAULT 'CART',
       total DECIMAL(100, 2) DEFAULT 0,
       promo UUID REFERENCES promos(id) DEFAULT NULL,
+      address VARCHAR,
       "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
 
@@ -112,7 +113,7 @@ const sync = async () => {
 
     CREATE TABLE addresses(
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      customerId UUID REFERENCES users(id) NOT NULL,
+      "customerId" UUID REFERENCES users(id) NOT NULL,
       address VARCHAR(100) NOT NULL,
       city VARCHAR(100) NOT NULL,
       state VARCHAR(100) NOT NULL,
@@ -179,40 +180,41 @@ const sync = async () => {
   };
 };
 
-const addAddress = async address => {
-	const SQL =
-		"INSERT INTO addresses(CustomerId, address, city, state, zip) values($1, $2, $3, $4, $5) returning *";
-	return (
-		await client.query(SQL, [
-			address.id,
-			address.address,
-			address.city,
-			address.state,
-			address.zip
-		])
-	).rows[0];
+const addAddress = async (address) => {
+  const SQL =
+    'INSERT INTO addresses("customerId", address, city, state, zip) values($1, $2, $3, $4, $5) returning *';
+  return (
+    await client.query(SQL, [
+      address.id,
+      address.address,
+      address.city,
+      address.state,
+      address.zip
+    ])
+  ).rows[0];
 };
 
 module.exports = {
-	sync,
-	models,
-	authenticate,
-	findUserFromToken,
-	getCart,
-	getOrders,
-	getPromo,
-	addToCart,
-	removeFromCart,
-	createOrder,
-	getLineItems,
-	applyPromo,
-	getAllPromos,
-	updateLineItems,
-	removePromo,
-	changePromoStatus,
-	getAllUsers,
-	addNewPromo,
-	rateItem,
-	changeUserStatus,
-	addAddress
+  sync,
+  models,
+  authenticate,
+  findUserFromToken,
+  getCart,
+  getOrders,
+  getPromo,
+  addToCart,
+  removeFromCart,
+  createOrder,
+  getLineItems,
+  applyPromo,
+  getAllPromos,
+  updateLineItems,
+  removePromo,
+  changePromoStatus,
+  getAllUsers,
+  addNewPromo,
+  rateItem,
+  changeUserStatus,
+  addAddress,
+  getAddresses
 };

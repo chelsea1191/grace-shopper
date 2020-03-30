@@ -4,6 +4,11 @@ import PromoDisplay from './PromoDisplay.js';
 import verify from './verify';
 
 const Cart = ({
+  auth,
+  addresses,
+  setAddresses,
+  selectedAddress,
+  setSelectedAddress,
   promo,
   promoDescription,
   setPromo,
@@ -28,6 +33,7 @@ const Cart = ({
   let cartId = cart.id;
   let promoId;
   let shipping = 5.99;
+  const [addressSubmitted, setAddressSubmitted] = useState(false);
   const onChange = ev => {
     let uppercaseInput = ev.target.value.toUpperCase();
     setPromo(uppercaseInput);
@@ -50,8 +56,18 @@ const Cart = ({
   const handleAddress = async e => {
     e.preventDefault();
     let addressRaw = e.target;
-    await verify(addressRaw, auth.id);
+    await verify(addressRaw, auth.id, setAddressSubmitted);
+    const userId = { userId: auth.id };
+    axios.post('/api/getAddresses', userId).then(response => {
+      setAddresses(response.data.rows);
+    });
   };
+
+  const addressOptions = addresses.map(address => (
+    <option key={address.id} value={address.address}>
+      {address.address}
+    </option>
+  ));
 
   const getTax = () => {
     if (subtotal * 0.93 - 5.99 <= 0) {
@@ -144,13 +160,26 @@ const Cart = ({
           />
         )}
       </form>
+      <p>Shipping Address: {selectedAddress}</p>
+      <select
+        multiple={false}
+        onChange={ev => setSelectedAddress(ev.target.value)}
+      >
+        <option value={selectedAddress}>Select an Existing Address</option>
+        {addressOptions}
+      </select>
+      {addressSubmitted && (
+        <p className="alert alert-success" role="alert">
+          address verified by google! select new address from above
+        </p>
+      )}
       <form onSubmit={handleAddress}>
         <input placeholder="Address" />
         <input placeholder="City" />
         <input placeholder="State" />
         <input placeholder="Zip" />
-        <button type="button" className="btn btn-secondary">
-          Use This Address
+        <button type="submit" className="btn btn-secondary">
+          Create a New Address
         </button>
       </form>
     </div>
