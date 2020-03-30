@@ -33,12 +33,16 @@ const getPromo = async (promo) => {
   ).rows[0];
 };
 
-const createOrder = async (userId, total) => {
+const createOrder = async (userId, input) => {
   //simply changes order status from cart to order and updates total
   const cart = await getCart(userId);
   cart.status = 'ORDER';
   await client.query(`UPDATE orders SET total=$1 WHERE id=$2 returning *`, [
-    total.subtotal,
+    input.subtotal,
+    cart.id
+  ]);
+  await client.query(`UPDATE orders SET address=$1 WHERE id=$2 returning *`, [
+    input.selectedAddress,
     cart.id
   ]);
   return (
@@ -131,6 +135,14 @@ const rateItem = async (rating, itemId, orderId) => {
   );
 };
 
+const getAddresses = async (userId) => {
+  const response = client.query(
+    `SELECT * from addresses WHERE "customerId"=$1`,
+    [userId]
+  );
+  return await response;
+};
+
 module.exports = {
   getCart,
   getOrders,
@@ -143,5 +155,6 @@ module.exports = {
   getAllPromos,
   updateLineItems,
   removePromo,
-  rateItem
+  rateItem,
+  getAddresses
 };
