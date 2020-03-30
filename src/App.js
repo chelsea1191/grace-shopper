@@ -177,7 +177,7 @@ const App = () => {
     });
   };
 
-  const changePassword = (newCredentials) => {
+  const changePassword = newCredentials => {
     axios.put(`/api/auth/${auth.id}`, newCredentials);
   };
 
@@ -268,22 +268,26 @@ const App = () => {
       <Router>
         <div>
           <nav className="navbar navbar-expand-lg navbar-light">
-            <h1>Grace Shopper</h1>
-            <li className="nav-link active">
-              <Link className="link" to="/login">
-                Login
-              </Link>
-            </li>
-            <li className="nav-link active">
-              <Link className="link" to="/register">
-                Register
-              </Link>
-            </li>
-            <li className="nav-link active">
-              <Link className="link" to="/guest">
-                Browse Products
-              </Link>
-            </li>
+            <h1 className="link navbar-brand mb-0 h1" to="/">
+              Grace Shopper
+            </h1>
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/login">
+                  Login
+                </Link>
+              </li>
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/register">
+                  Register
+                </Link>
+              </li>
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/guest">
+                  Browse Products
+                </Link>
+              </li>
+            </ul>
           </nav>
           <Switch>
             <Route path="/login">
@@ -343,14 +347,19 @@ const App = () => {
                   </Link>
                 </li>
               )}
-              <li className="nav-item" id="button-container">
+
+              <li className="nav-item active">
+                <Link className="link nav-link" to="/userprofile">
+                  User Profile
+                </Link>
+              </li>
+              <li className="nav-link">
                 <button
                   type="button"
-                  id="logout-button"
                   className="btn btn-secondary"
                   onClick={logout}
                 >
-                  Logout {auth.username}
+                  Logout {auth.firstname} {auth.lastname}
                 </button>
               </li>
               <li>
@@ -364,20 +373,6 @@ const App = () => {
                 </Link>
               </li>
             </ul>
-            )}
-            <li className='nav-link'>
-              <Link className='link' to='/userprofile'>
-                User Profile
-              </Link>
-            </li>
-            <li className='nav-link'>
-              <button
-                type='button'
-                className='btn btn-secondary'
-                onClick={logout}>
-                Logout {auth.firstname} {auth.lastname}
-              </button>
-            </li>
           </nav>
           <Switch>
             <Route path="/orders">
@@ -397,10 +392,10 @@ const App = () => {
               <AdminUsers users={users} setUsers={setUsers} />
             </Route>
 
-            <Route path='/userprofile'>
+            <Route path="/userprofile">
               <UserProfile auth={auth} changePassword={changePassword} />
             </Route>
-            <Route path='/cart'>
+            <Route path="/cart">
               <Cart
                 addresses={addresses}
                 setAddresses={setAddresses}

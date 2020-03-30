@@ -13,7 +13,7 @@ const Quantity = ({
   return lineItems.map(lineItem => {
     if (lineItem.productId === product.id) {
       return (
-        <div className="quantity">
+        <div className="quantity" key={lineItem.id}>
           <label htmlFor="name">Quantity: </label>
           <span className="input-group-btn">
             <button
