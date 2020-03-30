@@ -29,6 +29,7 @@ const Cart = ({
   let cartId = cart.id;
   let promoId;
   let shipping = 5.99;
+  const [addressSubmitted, setAddressSubmitted] = useState(false);
   const onChange = (ev) => {
     let uppercaseInput = ev.target.value.toUpperCase();
     setPromo(uppercaseInput);
@@ -51,7 +52,7 @@ const Cart = ({
   const handleAddress = async (e) => {
     e.preventDefault();
     let addressRaw = e.target;
-    await verify(addressRaw, auth.id);
+    await verify(addressRaw, auth.id, setAddressSubmitted);
     const userId = { userId: auth.id };
     axios.post('/api/getAddresses', userId).then((response) => {
       setAddresses(response.data.rows);
@@ -185,6 +186,11 @@ const Cart = ({
         <option value={selectedAddress}>Select an Existing Address</option>
         {addressOptions}
       </select>
+      {addressSubmitted && (
+        <p className='alert alert-success' role='alert'>
+          address verified by google! select new address from above
+        </p>
+      )}
       <form onSubmit={handleAddress}>
         <input placeholder='Address' />
         <input placeholder='City' />
