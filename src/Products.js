@@ -10,24 +10,25 @@ const Products = ({ auth, products, addToCart, setView }) => {
 
   return (
     <div>
-      <div className='container-fluid'>
-        {products.map((product) => {
+      <div className="container-fluid">
+        {products.map(product => {
           return (
-            <div className='wrapper' key={product.id}>
+            <div className="wrapper" key={product.id}>
               {authIsNull === false && (
                 <Link
                   to={`/products/${product.id}`}
-                  onClick={(el) => setView(product)}>
-                  <img className='card-img-top' src={product.image}></img>
+                  onClick={el => setView(product)}
+                >
+                  <img className="card-img-top" src={product.image}></img>
                 </Link>
               )}
               {authIsNull && (
-                <img className='card-img-top' src={product.image}></img>
+                <img className="card-img-top" src={product.image}></img>
               )}
-              <div className='card-body'>
+              <div className="card-body">
                 <Rating rating={product.rating} />
-                <h5 className='card-title'>{product.name}</h5>
-                <h4 className='card-price '>
+                <h5 className="card-title">{product.name}</h5>
+                <h4 className="card-price ">
                   ${Number(product.price).toFixed(2)}
                 </h4>
                 {auth === undefined && (
@@ -35,10 +36,11 @@ const Products = ({ auth, products, addToCart, setView }) => {
                 )}
                 {auth && (
                   <button
-                    id='addtocart'
-                    type='button'
-                    className='btn btn-dark'
-                    onClick={() => addToCart(product.id)}>
+                    id="addtocart"
+                    type="button"
+                    className="btn btn-dark"
+                    onClick={() => addToCart(product.id)}
+                  >
                     Add to Cart
                   </button>
                 )}
