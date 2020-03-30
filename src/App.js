@@ -58,6 +58,18 @@ const App = () => {
     if (auth.id) {
       const userId = { userId: auth.id };
       axios.post('/api/getAddresses', userId).then((response) => {
+        if (response.data.rows.length === 0) {
+          //if they dont have an address on file
+          axios
+            .post('/api/address', {
+              id: auth.id,
+              address: '1 UNF Dr',
+              city: 'Jacksonville',
+              state: 'Florida',
+              zip: '32256'
+            })
+            .then((response) => setAddresses([response.data]));
+        }
         setAddresses(response.data.rows);
       });
     }
@@ -141,19 +153,24 @@ const App = () => {
 
   const createOrder = () => {
     const token = window.localStorage.getItem('token');
-    axios
-      .post('/api/createOrder', { subtotal, selectedAddress }, headers())
-      .then((response) => {
-        setOrders([response.data, ...orders]);
-        const token = window.localStorage.getItem('token');
-        return axios.get('/api/getCart', headers());
-      })
-      .then((response) => {
-        setCart(response.data);
-      });
-    setMultiplier(null);
-    setPromoDescription('');
-    setSubtotal(0);
+    if (selectedAddress.length === 0) {
+      alert('please select or enter an address');
+    } else {
+      axios
+        .post('/api/createOrder', { subtotal, selectedAddress }, headers())
+        .then((response) => {
+          setOrders([response.data, ...orders]);
+          const token = window.localStorage.getItem('token');
+          return axios.get('/api/getCart', headers());
+        })
+        .then((response) => {
+          setCart(response.data);
+        });
+      setMultiplier(null);
+      setPromoDescription('');
+      setSubtotal(0);
+      setIsSubmitted(false);
+    }
   };
 
   const addToCart = (productId) => {
@@ -317,7 +334,6 @@ const App = () => {
             <Link className='link navbar-brand mb-0 h1' to='/'>
               <h1> Grace Shopper </h1>
             </Link>
-
             <ul className='navbar-nav mr-auto'>
               <li className='nav-item active'>
                 <Link className='link nav-link' to='/'>

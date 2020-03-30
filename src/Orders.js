@@ -33,8 +33,8 @@ const Orders = ({ lineItems, setLineItems, orders, products, setView }) => {
                     (product) => product.id === lineItem.productId
                   );
                   return (
-                    <div>
-                      <li key={lineItem.id}>
+                    <div key={lineItem.id}>
+                      <li>
                         <Link
                           to={`/products/${product.id}`}
                           onClick={(el) => setView(product)}>
