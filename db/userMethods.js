@@ -67,7 +67,16 @@ const addToCart = async ({ productId, userId }) => {
     lineItem.quantity++;
     return (
       await client.query(
-        `UPDATE "lineItems" set quantity=$1 WHERE id = $2 returning *`,
+        `with updated as (
+        UPDATE "lineItems"
+        set quantity=$1
+        WHERE id = $2
+          returning *
+          )
+          select * from updated
+          ORDER BY id`,
+
+        // `UPDATE "lineItems" set quantity=$1 WHERE id = $2 returning * ORDER BY id`,
         [lineItem.quantity, lineItem.id]
       )
     ).rows[0];
@@ -75,7 +84,16 @@ const addToCart = async ({ productId, userId }) => {
     //if it doesnt exist yet, add it
     return (
       await client.query(
-        `INSERT INTO "lineItems"("productId", "orderId") values ($1, $2) returning *`,
+        `with updated as (
+          INSERT INTO "lineItems"(
+            "productId", "orderId") values ($1, $2)
+            returning *
+          )
+          select * from updated
+          ORDER BY id
+        `,
+
+        // `INSERT INTO "lineItems"("productId", "orderId") values ($1, $2) returning *`,
         [productId, cart.id]
       )
     ).rows[0];
@@ -93,11 +111,15 @@ const removeFromCart = async ({ lineItemId, userId }) => {
 const getLineItems = async (userId) => {
   //get line items of corresponding order
   const SQL = `
-    SELECT "lineItems".*
-    FROM "lineItems"
-    JOIN orders
-    ON orders.id = "lineItems"."orderId"
-    WHERE orders."userId" = $1
+    with updated as (
+      SELECT "lineItems".*
+        FROM "lineItems"
+        JOIN orders
+        ON orders.id = "lineItems"."orderId"
+        WHERE orders."userId" = $1
+    )
+    select * from updated
+    ORDER BY id
   `;
   return (await client.query(SQL, [userId])).rows;
 };
@@ -115,7 +137,15 @@ const getAllPromos = async () => {
 };
 
 const updateLineItems = async (lineItemId, lineItemQuantity) => {
-  const SQL = `UPDATE "lineItems" SET quantity=$2 WHERE id=$1 returning *`;
+  const SQL = `with updated as (
+    UPDATE "lineItems"
+    set quantity=$2
+    WHERE id = $1
+      returning *
+      )
+      select * from updated
+      ORDER BY id`;
+
   const results = await client.query(SQL, [lineItemId, lineItemQuantity]);
 
   return results.rows[0];

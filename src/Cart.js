@@ -74,15 +74,11 @@ const Cart = ({
       removeFromCart(lineItem.id);
     } else {
       const newLineItem = { ...lineItem, quantity: num };
-      // const filteredLineItems = lineItems.filter(i => i.id !== newLineItem.id);
-      // const updatedLineItems = [...filteredLineItems, newLineItem];
-      await axios
-        .put(`/api/updateCart/${newLineItem.id}`, newLineItem)
-        .then((response) => {
-          axios.get('/api/getLineItems', headers()).then((response) => {
-            setLineItems(response.data);
-          });
-        });
+      await axios.put(`/api/updateCart/${newLineItem.id}`, newLineItem).then(
+        axios.get('/api/getLineItems', headers()).then((response) => {
+          setLineItems(response.data);
+        })
+      );
     }
   };
 
