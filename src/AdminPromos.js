@@ -49,7 +49,7 @@ const AdminPromos = ({ allPromos, setAllPromos }) => {
     <div>
       {allPromos.map((promo) => {
         return (
-          <div className='card' key={promo.id}>
+          <div className='card-user' key={promo.id}>
             <p>code: {promo.code}</p>
             <p>description: {promo.description}</p>
             <p>current status: {promo.status}</p>
@@ -81,7 +81,7 @@ const AdminPromos = ({ allPromos, setAllPromos }) => {
           success!
         </p>
       )}
-      <form onSubmit={submitNewPromo}>
+      <form className='card-user ' onSubmit={submitNewPromo}>
         <h3>Add a New Promo</h3>
         <input
           placeholder='code'

@@ -16,10 +16,11 @@ const UserProfile = ({ auth, changePassword }) => {
   };
 
   return (
-    <div>
-      <h5>first name: {auth.firstname}</h5>
-      <h5>last name: {auth.lastname}</h5>
-      <h5>username: {auth.username}</h5>
+    <div className='prod-container'>
+      <h4>First Name: {auth.firstname}</h4>
+      <h4>Last Name: {auth.lastname}</h4>
+      <h4>Username: {auth.username}</h4>
+      <br />
       <h3>Change Password</h3>
       <form onSubmit={onPassSubmit}>
         <input

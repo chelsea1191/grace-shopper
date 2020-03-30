@@ -2,21 +2,23 @@ import React from 'react';
 import axios from 'axios';
 
 const AdminUsers = ({ users, setUsers }) => {
-  const handleOptionChange = ev => {
+  const handleOptionChange = (ev) => {
     let selection = ev.target.value;
     let userId = ev.target.id;
     axios
       .post('/api/changeUserStatus', { userId, selection })
       .then(
-        axios.get('/api/getAllUsers').then(response => setUsers(response.data))
+        axios
+          .get('/api/getAllUsers')
+          .then((response) => setUsers(response.data))
       );
   };
 
   return (
     <div>
-      {users.map(user => {
+      {users.map((user) => {
         return (
-          <div className='card' key={user.id}>
+          <div className='card-user' key={user.id}>
             <p>username: {user.username}</p>
             <form>
               <div>

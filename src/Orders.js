@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-const Orders = ({ lineItems, setLineItems, orders, products }) => {
+const Orders = ({ lineItems, setLineItems, orders, products, setView }) => {
   const edit = async (e, itemId, orderId) => {
     let rating = e.target.previousElementSibling.value;
     axios
@@ -32,28 +33,37 @@ const Orders = ({ lineItems, setLineItems, orders, products }) => {
                     (product) => product.id === lineItem.productId
                   );
                   return (
-                    <li key={lineItem.id}>
-                      {product && product.name}
-                      <span className='quantity'>
-                        Quantity: {lineItem.quantity}
-                      </span>
-                      {lineItem.rating && (
-                        <span>user rating: {lineItem.rating}</span>
-                      )}
-                      <div>
-                        <label htmlFor='rating'>Rate this item</label>
-                        <select id='rating'>
-                          <option value='1'>1</option>
-                          <option value='2'>2</option>
-                          <option value='3'>3</option>
-                          <option value='4'>4</option>
-                          <option value='5'>5</option>
-                        </select>
-                        <button onClick={(e) => edit(e, lineItem.id, order.id)}>
-                          submit
-                        </button>
-                      </div>
-                    </li>
+                    <div key={lineItem.id}>
+                      <li>
+                        <Link
+                          to={`/products/${product.id}`}
+                          onClick={(el) => setView(product)}>
+                          <img className='avatar' src={product.image}></img>
+                        </Link>
+                        {product && product.name}
+                        <span className='quantity'>
+                          Quantity: {lineItem.quantity}
+                        </span>
+                        {lineItem.rating && (
+                          <span>user rating: {lineItem.rating}</span>
+                        )}
+                        <div>
+                          <label htmlFor='rating'>Rate this item</label>
+                          <select id='rating'>
+                            <option value='1'>1</option>
+                            <option value='2'>2</option>
+                            <option value='3'>3</option>
+                            <option value='4'>4</option>
+                            <option value='5'>5</option>
+                          </select>
+                          <button
+                            onClick={(e) => edit(e, lineItem.id, order.id)}>
+                            submit
+                          </button>
+                        </div>
+                      </li>
+                      <hr />
+                    </div>
                   );
                 })}
               </ul>
