@@ -194,6 +194,7 @@ const App = () => {
       setSubtotal(0);
       setIsSubmitted(false);
       setSelectedAddress([]);
+      setPromo([]);
     }
   };
 
