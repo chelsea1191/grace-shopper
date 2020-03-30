@@ -7,14 +7,18 @@ const apiKey = 'WS75-VRC1-NSQ3';
 export default function CreateUser({ auth, setAuth }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let name = e.target[0].value;
-    let password = e.target[1].value;
-    let address = e.target[2].value;
-    let city = e.target[3].value;
-    let state = e.target[4].value;
-    let zip = e.target[5].value;
+    let name = e.target[2].value;
+    let firstname = e.target[0].value;
+    let lastname = e.target[1].value;
+    let password = e.target[3].value;
+    let address = e.target[4].value;
+    let city = e.target[5].value;
+    let state = e.target[6].value;
+    let zip = e.target[7].value;
     let newUser = {
       username: name,
+      firstname: firstname,
+      lastname: lastname,
       password: password,
       role: null,
       status: 'active',
@@ -56,7 +60,9 @@ export default function CreateUser({ auth, setAuth }) {
           handleSubmit(e);
         }}>
         <h1>Create New User</h1>
-        <input placeholder='Name' />
+        <input placeholder='First Name' />
+        <input placeholder='Last Name' />
+        <input placeholder='Username' />
         <input placeholder='Password' type='password' />
         <input placeholder='Address' />
         <input placeholder='City' />

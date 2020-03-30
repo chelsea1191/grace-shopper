@@ -249,11 +249,6 @@ const App = () => {
                 Register
               </Link>
             </li>
-            <li className='nav-link active'>
-              <Link className='link' to='/guest'>
-                Browse Products
-              </Link>
-            </li>
           </nav>
           <Switch>
             <Route path='/login'>
@@ -262,14 +257,12 @@ const App = () => {
             <Route path='/register'>
               <CreateUser auth={auth} setAuth={setAuth} />
             </Route>
-            <Route path='/guest'>
-              <Products
-                addToCart={addToCart}
-                products={products}
-                setView={setView}
-              />
-            </Route>
           </Switch>
+          <Products
+            addToCart={addToCart}
+            products={products}
+            setView={setView}
+          />
         </div>
       </Router>
     );
@@ -318,7 +311,7 @@ const App = () => {
                 type='button'
                 className='btn btn-secondary'
                 onClick={logout}>
-                Logout {auth.username}
+                Logout {auth.firstname} {auth.lastname}
               </button>
             </li>
           </nav>
