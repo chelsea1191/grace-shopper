@@ -9,6 +9,7 @@ import Products from './Products';
 import ProductPage from './ProductPage';
 import AdminPromos from './AdminPromos';
 import AdminUsers from './AdminUsers';
+import UserProfile from './UserProfile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
@@ -178,6 +179,10 @@ const App = () => {
     });
   };
 
+  const changePassword = (newCredentials) => {
+    axios.put(`/api/auth/${auth.id}`, newCredentials);
+  };
+
   const totalItemsInCart = () => {
     const quantityArray = lineItems
       .filter((lineItem) => lineItem.orderId === cart.id)
@@ -249,11 +254,6 @@ const App = () => {
                 Register
               </Link>
             </li>
-            <li className='nav-link active'>
-              <Link className='link' to='/guest'>
-                Browse Products
-              </Link>
-            </li>
           </nav>
           <Switch>
             <Route path='/login'>
@@ -262,14 +262,12 @@ const App = () => {
             <Route path='/register'>
               <CreateUser auth={auth} setAuth={setAuth} />
             </Route>
-            <Route path='/guest'>
-              <Products
-                addToCart={addToCart}
-                products={products}
-                setView={setView}
-              />
-            </Route>
           </Switch>
+          <Products
+            addToCart={addToCart}
+            products={products}
+            setView={setView}
+          />
         </div>
       </Router>
     );
@@ -314,11 +312,16 @@ const App = () => {
               </li>
             )}
             <li className='nav-link'>
+              <Link className='link' to='/userprofile'>
+                User Profile
+              </Link>
+            </li>
+            <li className='nav-link'>
               <button
                 type='button'
                 className='btn btn-secondary'
                 onClick={logout}>
-                Logout {auth.username}
+                Logout {auth.firstname} {auth.lastname}
               </button>
             </li>
           </nav>
@@ -338,6 +341,9 @@ const App = () => {
 
             <Route path='/adminusers'>
               <AdminUsers users={users} setUsers={setUsers} />
+            </Route>
+            <Route path='/userprofile'>
+              <UserProfile auth={auth} changePassword={changePassword} />
             </Route>
             <Route path='/cart'>
               <Cart
