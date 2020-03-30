@@ -11,12 +11,6 @@ const ProductPage = ({
   lineItems,
   setNewQuantity,
 }) => {
-  // make quantity field & buttons appear if item is in cart
-  // need a toggle so that if user's cart has product with this product id,
-  // the quantity component will be rendered
-
-  console.log(lineItems);
-
   return (
     <div>
       <img src={product.image} />
