@@ -51,8 +51,6 @@ export default function CreateUser({ auth, setAuth }) {
       console.log(response);
       alert('User Created');
     });
-    window.location.hash = '#';
-    window.localStorage.removeItem('token');
   };
 
   return (
