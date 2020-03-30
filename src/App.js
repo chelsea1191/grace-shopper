@@ -59,18 +59,40 @@ const App = () => {
       const userId = { userId: auth.id };
       axios.post('/api/getAddresses', userId).then((response) => {
         if (response.data.rows.length === 0) {
-          //if they dont have an address on file
-          axios
-            .post('/api/address', {
-              id: auth.id,
-              address: '1 UNF Dr',
-              city: 'Jacksonville',
-              state: 'Florida',
-              zip: '32256'
-            })
-            .then((response) => setAddresses([response.data]));
+          if (auth.username === 'lucy') {
+            axios
+              .post('/api/address', {
+                id: auth.id,
+                address: '1 UNF Dr',
+                city: 'Jacksonville',
+                state: 'Florida',
+                zip: '32256'
+              })
+              .then((response) => setAddresses([response.data]));
+          } else if (auth.username === 'moe') {
+            axios
+              .post('/api/address', {
+                id: auth.id,
+                address: '10150 Beach Blvd',
+                city: 'Jacksonville',
+                state: 'Florida',
+                zip: '32246'
+              })
+              .then((response) => setAddresses([response.data]));
+          } else {
+            axios
+              .post('/api/address', {
+                id: auth.id,
+                address: '501 W Adams St',
+                city: 'Jacksonville',
+                state: 'Florida',
+                zip: '32202'
+              })
+              .then((response) => setAddresses([response.data]));
+          }
+        } else {
+          setAddresses(response.data.rows);
         }
-        setAddresses(response.data.rows);
       });
     }
   }, [auth]);
@@ -135,6 +157,7 @@ const App = () => {
     window.localStorage.removeItem('token');
     setAuth({});
     setIsAdmin(false);
+    setSelectedAddress([]);
   };
 
   useEffect(() => {
@@ -170,6 +193,7 @@ const App = () => {
       setPromoDescription('');
       setSubtotal(0);
       setIsSubmitted(false);
+      setSelectedAddress([]);
     }
   };
 
