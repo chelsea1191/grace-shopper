@@ -82,108 +82,128 @@ const Cart = ({
   };
 
   return (
-    <div>
-      <h2>Cart - {cart.id && cart.id.slice(0, 4)}</h2>
-      <button
-        type='button'
-        type='button'
-        className='btn btn-secondary'
-        disabled={!lineItems.find((lineItem) => lineItem.orderId === cart.id)}
-        onClick={createOrder}>
-        Create Order
-      </button>
-      <ul>
-        {lineItems
-          .filter((lineItem) => lineItem.orderId === cart.id)
-          .map((lineItem) => {
-            const product = products.find(
-              (product) => product.id === lineItem.productId
-            );
-            return (
-              <li className='horizontal' key={lineItem.id}>
-                <Link
-                  to={`/products/${product.id}`}
-                  onClick={(el) => setView(product)}>
-                  <img className='avatar' src={product.image}></img>
-                </Link>
-                {product && product.name}
-                <br />${product.price} each <br /> item subtotal: $
-                {Number(lineItem.quantity * product.price).toFixed(2)}
-                <div className='quantity'>
-                  <label htmlFor='name'>Quantity: </label>
-                  <span className='input-group-btn'>
+    <div className='outer-box'>
+      <div className='cartbox'>
+        <h2>Cart</h2>
+        <ul>
+          {lineItems
+            .filter((lineItem) => lineItem.orderId === cart.id)
+            .map((lineItem) => {
+              const product = products.find(
+                (product) => product.id === lineItem.productId
+              );
+              return (
+                <li className='horizontal' key={lineItem.id}>
+                  <Link
+                    to={`/products/${product.id}`}
+                    onClick={(el) => setView(product)}>
+                    <img className='avatar' src={product.image}></img>
+                  </Link>
+                  {product && product.name}
+                  <br />${product.price} each <br /> item subtotal: $
+                  {Number(lineItem.quantity * product.price).toFixed(2)}
+                  <div className='quantity'>
+                    <label htmlFor='name'>Quantity: </label>
+                    <div>
+                      <span className='input-group-btn '>
+                        <button
+                          type='button'
+                          className='btn btn-danger btn-number'
+                          onClick={() => decrementQuantity(lineItem)}>
+                          -
+                        </button>
+                      </span>
+                      <input
+                        className='quantity-field '
+                        type='text'
+                        name='quantity'
+                        value={lineItem.quantity}
+                        onChange={(e) => changeQuantity(lineItem, e)}
+                      />
+                      <span className='input-group-btn'>
+                        <button
+                          type='button'
+                          className='btn btn-success btn-number'
+                          onClick={() => incrementQuantity(lineItem)}>
+                          +
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
                     <button
-                      type='button'
-                      className='btn btn-danger btn-number'
-                      onClick={() => decrementQuantity(lineItem)}>
-                      -
+                      className='btn btn-outline-danger'
+                      onClick={() => removeFromCart(lineItem.id)}>
+                      Remove From Cart
                     </button>
-                  </span>
-                  <input
-                    className='quantity-field'
-                    type='text'
-                    name='quantity'
-                    value={lineItem.quantity}
-                    onChange={(e) => changeQuantity(lineItem, e)}
-                  />
-                  <span className='input-group-btn'>
-                    <button
-                      type='button'
-                      className='btn btn-success btn-number'
-                      onClick={() => incrementQuantity(lineItem)}>
-                      +
-                    </button>
-                  </span>
-                </div>
-                <div>
-                  <button
-                    className='btn btn-outline-danger'
-                    onClick={() => removeFromCart(lineItem.id)}>
-                    Remove From Cart
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-      </ul>
-      <p>shipping (3-5 business days): ${shipping}</p>
-      <p>tax: ${getTax().toFixed(2)} </p>
-      <p>order total: ${subtotal.toFixed(2)}</p>
-      <form onSubmit={onPromoSubmit}>
-        <input placeholder='promo code' value={promo} onChange={onChange} />
-        <button type='submit' className='btn btn-secondary'>
-          submit promo code
-        </button>
-        {isSubmitted && (
-          <PromoDisplay
-            isSubmitted={isSubmitted}
-            cart={cart}
-            promoDescription={promoDescription}
-            removePromo={removePromo}
-          />
-        )}
-      </form>
-      <p>Shipping Address: {selectedAddress}</p>
-      <select
-        multiple={false}
-        onChange={(ev) => setSelectedAddress(ev.target.value)}>
-        <option value={selectedAddress}>Select an Existing Address</option>
-        {addressOptions}
-      </select>
-      {addressSubmitted && (
-        <p className='alert alert-success' role='alert'>
-          address verified by google! select new address from above
-        </p>
-      )}
-      <form onSubmit={handleAddress}>
-        <input placeholder='Address' />
-        <input placeholder='City' />
-        <input placeholder='State' />
-        <input placeholder='Zip' />
-        <button type='submit' className='btn btn-secondary'>
-          Create a New Address
-        </button>
-      </form>
+                  </div>
+                </li>
+              );
+            })}
+        </ul>
+        <div className='totalsbox'>
+          <div className='totals'>
+            <p>shipping (3-5 business days): ${shipping}</p>
+            <p>tax: ${getTax().toFixed(2)} </p>
+            <h3>order total: ${subtotal.toFixed(2)}</h3>
+          </div>
+          <button
+            type='button'
+            type='button'
+            className='btn btn-secondary totalbutton'
+            disabled={
+              !lineItems.find((lineItem) => lineItem.orderId === cart.id)
+            }
+            onClick={createOrder}>
+            Submit Order
+          </button>
+        </div>
+      </div>
+      <div className='entriesbox'>
+        <div className='promobox'>
+          <form onSubmit={onPromoSubmit}>
+            <input placeholder='promo code' value={promo} onChange={onChange} />
+            <button type='submit' className='btn btn-secondary'>
+              submit promo code
+            </button>
+            {isSubmitted && (
+              <PromoDisplay
+                isSubmitted={isSubmitted}
+                cart={cart}
+                promoDescription={promoDescription}
+                removePromo={removePromo}
+              />
+            )}
+          </form>
+        </div>
+        <div className='shippingbox'>
+          <div className='shipping-select'>
+            <p>Select shipping address or enter a new one: {selectedAddress}</p>
+            <select
+              multiple={false}
+              onChange={(ev) => setSelectedAddress(ev.target.value)}>
+              <option value={selectedAddress}>
+                Select an Existing Address
+              </option>
+              {addressOptions}
+            </select>
+          </div>
+          {addressSubmitted && (
+            <p className='alert alert-success' role='alert'>
+              address verified by google! select new address from above
+            </p>
+          )}
+          <form onSubmit={handleAddress}>
+            <input placeholder='Address' />
+            <input placeholder='City' />
+            <input placeholder='State' />
+            <input placeholder='Zip' />
+            <button type='submit' className='btn btn-secondary'>
+              Create a New Address
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

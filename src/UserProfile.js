@@ -35,7 +35,7 @@ const UserProfile = ({ auth, changePassword }) => {
           value={secondpass}
           onChange={(ev) => setsecondpass(ev.target.value)}
         />
-        <button type='submit'>submit password change</button>
+        <button type='submit'>Submit Password Change</button>
         {isSuccessful && (
           <p className='alert alert-success' role='alert'>
             password successfully changed!
